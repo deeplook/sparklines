@@ -1,0 +1,9 @@
+0.1.0: Initial version (unreleased)
+
+0.2.0: First released version:
+
+- increased resolution with multiple output lines per sparkline
+- show gaps in input numbers for missing data
+- issue warnings for negative values (allowed, but misleading)
+- tested on Python 2 and 3
+- packaged code

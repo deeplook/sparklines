@@ -1,0 +1,4 @@
+include CHANGELOG.txt
+include CONTRIBUTORS.txt
+include LICENSE.txt
+include README.rst

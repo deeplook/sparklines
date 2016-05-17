@@ -2,9 +2,10 @@ Sparklines
 ==========
 
 This Python package implements Edward Tufte's concept of sparklines_, but
-limited to text only e.g. like this: ▃▁▄▁▅█▂▅. You can find more information
-about sparklines `on Wikipedia`_. This code was mainly developed for running
-simple plausibility tests in sensor networks as shown in the following image:
+limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this I likely not displayed
+correctly in every browser). You can find more information about sparklines
+`on Wikipedia`_. This code was mainly developed for running simple
+plausibility tests in sensor networks as shown in fig. 1 below:
 
 .. figure:: example_sensors.png
    :width: 75%
@@ -19,7 +20,8 @@ values are positive. And even then true sparklines that look more like lines
 and less like bars are a real challenge, because they would need multiple
 characters with a single horizontal line on different vertical positions. This
 would work only with a dedicated font, which is way beyond the scope of this
-tool and which would significantly complicate its usage. So we stick to these characters: "▁▂▃▄▅▆▇█", including a blank when there is no value.
+tool and which would significantly complicate its usage. So we stick to these
+characters: "▁▂▃▄▅▆▇█", including a blank when there is no value.
 
 This code was tested ok for Python 2.6 to 2.7 and 3.2 to 3.5.
 
@@ -102,7 +104,7 @@ Programmatic
 
 And here are sample invocations from interactive Python sessions, copied into
 this README. The main function to use programmatically is 
-``sparkline.sparklines()``:
+``sparklines.sparklines()``:
 
 .. code-block:: python
 
@@ -131,7 +133,7 @@ and by RegKrieg to a Python package named `pysparklines <https://github.com/RedK
 And Roger Allen provides an even `shorter spark.py 
 <https://gist.githubusercontent.com/rogerallen/1368454/raw/b17e96b56ae881621a9f3b1508ca2e7fde3ec93e/spark.py>`_.
 
-But since it is so small and easy to code in Python we can add a few nice
+But since it is so short and easy to code in Python we can add a few nice
 extra features I was missing, like:
 
 - increasing resolution with multiple output lines per sparkline

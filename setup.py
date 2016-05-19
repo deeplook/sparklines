@@ -1,7 +1,7 @@
 import setuptools
 import distutils.core
 
-from sparkline.sparkline import __version__
+from sparklines.sparklines import __version__
 
 
 class PyTest(distutils.core.Command):

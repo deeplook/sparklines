@@ -8,6 +8,7 @@ Please read the file README.rst for more information.
 """
 
 from __future__ import unicode_literals, print_function
+import re
 import sys
 import warnings
 import argparse
@@ -19,8 +20,14 @@ try:
 except ImportError:
     pass
 
+try:
+    import termcolor
+    HAVE_TERMCOLOR = True
+except ImportError:
+    HAVE_TERMCOLOR = False
 
-__version__ = '0.2.0'
+
+__version__ = '0.3.0'
 
 
 def _rescale(x1, y1, x2, y2, x):
@@ -40,7 +47,32 @@ def _check_negatives(numbers):
         warnings.warn(msg)
 
 
-def sparklines(numbers=[], num_lines=1, verbose=False):
+def _check_emphasis(numbers, emph):
+    "Find index postions in list of numbers to be emphasized according to emph."
+
+    pat = '(\w+)\:(eq|gt|ge|lt|le)\:(.+)'
+    # find values to be highlighted
+    emphasized = {} # index: color
+    for (i, n) in enumerate(numbers):
+        if n is None:
+            continue
+        for em in emph:
+            color, op, value = re.match(pat, em).groups()
+            value = float(value)
+            if op == 'eq' and n == value:
+                emphasized[i] = color
+            elif op == 'gt' and n > value:
+                emphasized[i] = color
+            elif op == 'ge' and n >= value:
+                emphasized[i] = color
+            elif op == 'lt' and n < value:
+                emphasized[i] = color
+            elif op == 'le' and n <= value:
+                emphasized[i] = color
+    return emphasized
+
+
+def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -71,6 +103,9 @@ def sparklines(numbers=[], num_lines=1, verbose=False):
     min_ = min(filtered)
     max_ = max(filtered)
     dv = max_ - min_
+
+    # find values to be highlighted
+    emphasized = _check_emphasis(numbers, emph) if emph else {}
 
     blocks = " ▁▂▃▄▅▆▇█"
     if dv == 0:
@@ -104,7 +139,11 @@ def sparklines(numbers=[], num_lines=1, verbose=False):
         multi_values.reverse()
         lines = []
         for values in multi_values:
-            res = [blocks[int(v)] if not v is None else ' ' for v in values]
+            if HAVE_TERMCOLOR and emphasized:
+                tc = termcolor.colored
+                res = [tc(blocks[int(v)], emphasized.get(i, 'white')) if not v is None else ' ' for (i, v) in enumerate(values)]
+            else:
+                res = [blocks[int(v)] if not v is None else ' ' for v in values]
             lines.append(''.join(res))
         return lines
 

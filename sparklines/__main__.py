@@ -91,8 +91,8 @@ def main():
         sys.exit()
 
     numbers = args.nums
-    if type(numbers) == file:
-        numbers = numbers.read().split()
+    if numbers == sys.stdin:
+        numbers = numbers.read().strip().split()
     numbers = [_float_or_none(n) for n in numbers]
 
     if args.demo:

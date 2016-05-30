@@ -41,6 +41,8 @@ Examples for the code below:
     ▂▇▁█▂█▁█
     $ echo 2 7 1 8 2 8 1 8 | sparklines
     ▂▇▁█▂█▁█
+    $ sparklines < numbers.txt
+    ▂▇▁█▂█▁█
     $ sparklines 0 2. 1e0
     ▁█▅
 

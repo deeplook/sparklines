@@ -31,9 +31,8 @@ Sample output
 
 Here's a recorded sample session illustrating how to use ``sparklines``:
 
-.. raw:: html
-
-  <a href="https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep" target="_blank"><img src="https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png" /></a>
+.. image:: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png
+   :target: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep
 
 Here is some example output on the command-line (please note that in some
 browsers the vertical alignment of these block characters might be displayed

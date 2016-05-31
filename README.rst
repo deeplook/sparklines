@@ -33,7 +33,7 @@ Here's a recorded sample session illustrating how to use ``sparklines``:
 
 .. raw:: html
 
-  <script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-5xwfvcrrk09fy3ml3a8n67hep" async data-autoplay="true" data-loop="false"></script>
+  <a href="https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep" target="_blank"><img src="https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png" /></a>
 
 Here is some example output on the command-line (please note that in some
 browsers the vertical alignment of these block characters might be displayed

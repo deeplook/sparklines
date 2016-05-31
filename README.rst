@@ -29,6 +29,12 @@ This code was tested ok for Python 2.6 to 2.7 and 3.2 to 3.5.
 Sample output
 -------------
 
+Here's a recorded sample session illustrating how to use ``sparklines``:
+
+.. raw:: html
+
+  <script type="text/javascript" src="https://asciinema.org/a/14.js" id="asciicast-5xwfvcrrk09fy3ml3a8n67hep" async data-autoplay="true" data-loop="false"></script>
+
 Here is some example output on the command-line (please note that in some
 browsers the vertical alignment of these block characters might be displayed
 slightly wrong, the same effect can be seen for other repos referenced below):

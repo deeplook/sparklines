@@ -7,11 +7,14 @@ Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▅█▂
 Please read the file README.rst for more information.
 """
 
-from __future__ import unicode_literals, print_function
+from __future__ import unicode_literals, print_function, division
 import re
 import sys
 import warnings
 import argparse
+
+from future.builtins import round # bankers' rounding for Python 2
+
 
 # handle different file types in Python 2 and 3
 try:
@@ -28,6 +31,8 @@ except ImportError:
 
 
 __version__ = '0.3.0'
+
+blocks = " ▁▂▃▄▅▆▇█"
 
 
 def _rescale(x1, y1, x2, y2, x):
@@ -72,6 +77,37 @@ def _check_emphasis(numbers, emph):
     return emphasized
 
 
+def scale_values(numbers, num_lines=1):
+    "Scale input numbers to appropriate range."
+
+    # find min/max values, ignoring Nones
+    filtered = [n for n in numbers if n is not None]
+    min_ = min(filtered)
+    max_ = max(filtered)
+    dv = max_ - min_
+
+    if dv == 0:
+        values = [4 * num_lines for x in numbers]
+    elif dv > 0:
+        num_blocks = len(blocks) - 1
+
+        values = [
+            (num_blocks - 1.) / dv * x + (max_*1. - min_ * num_blocks) / dv
+                if not x is None else None
+            for x in numbers
+        ]
+
+        if num_lines > 1:
+            m = min([n for n in values if n is not None])
+            values = [
+                _rescale(m, m, max_, num_lines * max_, v)
+                    if not v is None else None
+                for v in values
+            ]
+        values = [round(v) or 1 if not v is None else None for v in values]
+    return values
+
+
 def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
@@ -82,7 +118,7 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
     Examples:
 
         sparklines([3, 1, 4, 1, 5, 9, 2, 6])
-        -> ['▃▁▄▁▅█▂▅']
+        -> ['▃▁▄▁▄█▂▅']
         sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=2)
         -> [
             '     █ ▂',
@@ -98,35 +134,10 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
     # raise warning for negative numbers
     _check_negatives(numbers)
 
-    # find min/max values, ignoring Nones
-    filtered = [n for n in numbers if n is not None]
-    min_ = min(filtered)
-    max_ = max(filtered)
-    dv = max_ - min_
+    values = scale_values(numbers, num_lines=num_lines)
 
     # find values to be highlighted
     emphasized = _check_emphasis(numbers, emph) if emph else {}
-
-    blocks = " ▁▂▃▄▅▆▇█"
-    if dv == 0:
-        values = [4 * num_lines for x in numbers]
-    elif dv > 0:
-        num_blocks = len(blocks) - 1
-
-        values = [
-            (num_blocks - 1.) / dv * x + (max_*1. - min_ * num_blocks) / dv
-                if not x is None else None
-            for x in numbers
-        ]
-
-        if num_lines > 1:
-            m = min([n for n in values if n is not None])
-            values = [
-                _rescale(m, m, max_, num_lines * max_, v) 
-                    if not v is None else None
-                for v in values
-            ]
-        values = [round(v) if not v is None else None for v in values]
 
     if num_lines > 0:
         multi_values = []

@@ -33,6 +33,7 @@ setuptools.setup(
     long_description=open('README.rst').read(),
     install_requires=[
         # 'termcolor',
+        'future',
     ],
     entry_points={
         'console_scripts': ['sparklines=sparklines.__main__:main']

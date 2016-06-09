@@ -27,7 +27,7 @@ setuptools.setup(
     author_email='gherman@darwin.in-berlin.de',
     description='Generate sparklines for numbers using Unicode characters only.',
     license='GPL',
-    keywords='visualization, tool',
+    keywords='visualization, chart, tool',
     url='https://github.com/deeplook/sparklines',
     packages=setuptools.find_packages(exclude='test'),
     long_description=open('README.rst').read(),

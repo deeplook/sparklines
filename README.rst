@@ -7,7 +7,7 @@ correctly in every browser). You can find more information about sparklines
 `on Wikipedia`_. This code was mainly developed for running simple
 plausibility tests in sensor networks as shown in fig. 1 below:
 
-.. figure:: example_sensors.png
+.. figure:: https://raw.githubusercontent.com/deeplook/sparklines/master/example_sensors.png
    :width: 75%
    :alt: example usecase with sensor values
    :align: center
@@ -83,7 +83,7 @@ this in your terminal, Python or IPython session or your Python IDE of choice.
 The following images shows better what you should expect than the copied sample
 code thereafter:
 
-.. figure:: example_python.png
+.. figure:: https://raw.githubusercontent.com/deeplook/sparklines/master/example_python.png
    :width: 65%
    :alt: example interactive invocation
    :align: center

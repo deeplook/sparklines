@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▅█▂▅.
+Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂▅.
 
 Please read the file README.rst for more information.
 """
@@ -163,37 +163,40 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
+    fmt = lambda num: '%g' % num if type(num) is float else 'None'
+    nums1 = map(fmt, nums)
 
     if __name__ == '__main__':
         prog = sys.argv[0]
     else:
-        prog = __file__
+        prog = 'sparklines'
+
 
     print('Usage examples (command-line and programmatic use):')
     print('')
 
-    print('Standard one-line sparkline')
-    print('python %s %s' % (prog, ' '.join(map(str, nums))))
-    print('>>> print(sparklines(%s)[0])' % nums)
+    print('- Standard one-line sparkline')
+    print('%s %s' % (prog, ' '.join(nums1)))
+    print('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
     print(sparklines(nums)[0])
     print('')
 
-    print('Multi-line sparkline (n=2)')
-    print('python %s -n 2 %s' % (prog, ' '.join(map(str, nums))))
-    print('>>> for line in sparklines(%s, num_lines=2): print(line)' % nums)
+    print('- Multi-line sparkline (n=2)')
+    print('%s -n 2 %s' % (prog, ' '.join(nums1)))
+    print('>>> for line in sparklines([%s], num_lines=2): print(line)' % ', '.join(nums1))
     for line in sparklines(nums, num_lines=2):
         print(line)
     print('')
 
-    print('Multi-line sparkline (n=3)')
-    print('python %s -n 3 %s' % (prog, ' '.join(map(str, nums))))
-    print('>>> for line in sparklines(%s, num_lines=3): print(line)' % nums)
+    print('- Multi-line sparkline (n=3)')
+    print('%s -n 3 %s' % (prog, ' '.join(nums1)))
+    print('>>> for line in sparklines([%s], num_lines=3): print(line)' % ', '.join(nums1))
     for line in sparklines(nums, num_lines=3):
         print(line)
     print('')
 
     nums = nums + [None] + list(reversed(nums[:]))
-    print('Standard one-line sparkline with gap')
-    print('python %s %s' % (prog, ' '.join(map(str, nums))))
-    print('>>> print(sparklines(%s)[0])' % nums)
+    print('- Standard one-line sparkline with gap')
+    print('%s %s' % (prog, ' '.join(nums1)))
+    print('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
     print(sparklines(nums)[0])

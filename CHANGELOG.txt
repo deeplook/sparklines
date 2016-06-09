@@ -7,3 +7,17 @@
 - issue warnings for negative values (allowed, but misleading)
 - tested on Python 2 and 3
 - packaged code
+
+0.3.0: Second release:
+
+- removed typos related to singular/plural forms of "sparkline/s"
+- added color emphasis in output using "termcolor" package (if present)
+
+0.4.0: Third release:
+
+- made rounding consistent across Python 2 and 3 (bankers' rounding)
+- added future dependancy for this kind of rounding in Python 2
+- added filter to unclutter input numbers (remove commas, etc.)
+- added tox support
+- added more tests
+- added asciicast to README.rst

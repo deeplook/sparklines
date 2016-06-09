@@ -8,7 +8,42 @@ Run from the root folder with either 'python setup.py test' or
 
 from __future__ import unicode_literals, print_function
 
+import pytest
+
 from sparklines import sparklines, scale_values
+from sparklines.__main__ import test_valid_number as is_valid_number
+
+
+def test_parse_float():
+    "Test parsing input numbers."
+
+    t = is_valid_number
+
+    assert t('4.5') == '4.5'
+    assert t('-4.5') == '-4.5'
+    assert t('4.') == '4.'
+    assert t('.5') == '.5'
+    assert t('4.5e0') == '4.5e0'
+    assert t('-4.5e0') == '-4.5e0'
+    assert t('-4.5e-2') == '-4.5e-2'
+    assert t('-.5e-2') == '-.5e-2'
+
+    assert t('4.5,') == '4.5'
+    assert t('4.5;') == '4.5'
+    assert t('"4.5"') == '4.5'
+    assert t('(4.5)') == '4.5'
+
+    assert t('null') == 'null'
+    assert t('Null') == 'null'
+    assert t('none') == 'none'
+    assert t('None') == 'none'
+
+    assert t('None,') == 'none'
+
+    with pytest.raises(ValueError):
+        t(',')
+    with pytest.raises(ValueError):
+        t('invalid')
 
 
 def test_scale0():

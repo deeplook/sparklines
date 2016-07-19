@@ -21,3 +21,9 @@
 - added tox support
 - added more tests
 - added asciicast to README.rst
+
+0.4.1: Fourth release:
+
+- improved command-line option -e/--emphasise to take only one argument,
+  but can be used repeatedly now, which reduces unexpected behaviour
+

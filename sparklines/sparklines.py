@@ -11,7 +11,6 @@ from __future__ import unicode_literals, print_function, division
 import re
 import sys
 import warnings
-import argparse
 
 from future.builtins import round # bankers' rounding for Python 2
 
@@ -77,14 +76,17 @@ def _check_emphasis(numbers, emph):
     return emphasized
 
 
-def scale_values(numbers, num_lines=1):
+def scale_values(numbers, num_lines=1, maximum=None):
     "Scale input numbers to appropriate range."
 
     # find min/max values, ignoring Nones
     filtered = [n for n in numbers if n is not None]
     min_ = min(filtered)
-    max_ = max(filtered)
+    max_ = max(filtered) if maximum is None else maximum
     dv = max_ - min_
+
+    # clamp
+    numbers = [max(min(n, max_), min_) for n in numbers]
 
     if dv == 0:
         values = [4 * num_lines for x in numbers]
@@ -108,7 +110,7 @@ def scale_values(numbers, num_lines=1):
     return values
 
 
-def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
+def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, maximum=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -134,7 +136,7 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False):
     # raise warning for negative numbers
     _check_negatives(numbers)
 
-    values = scale_values(numbers, num_lines=num_lines)
+    values = scale_values(numbers, num_lines=num_lines, maximum=maximum)
 
     # find values to be highlighted
     emphasized = _check_emphasis(numbers, emph) if emph else {}

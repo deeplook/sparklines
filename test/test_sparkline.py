@@ -93,6 +93,10 @@ def test_rounding0():
     exp = ['▁▅█'] # 1, 5, 8
     assert res == exp
 
+def test_maximum():
+    res = sparklines([1, 2, 3, 10, 10], maximum=3)
+    exp = ['▁▄███']
+    assert res == exp
 
 def test1():
     "Test single values all have the same four pixel high output character."

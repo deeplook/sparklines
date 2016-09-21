@@ -81,6 +81,9 @@ def main():
     p.add_argument('-d', '--demo', action='store_true',
         help='Show a few usage examples for given (mandatory) input values.')
 
+    p.add_argument('-M', '--max', type=float,
+        help='Use the value as the maximum for scaling')
+
     help_emph = '''Emphasise input values below or above a certain
         threshold (e.g. "green:gt:5.0"). This option takes one argument
         value, but can be given repeatedly. Works only when optional
@@ -116,8 +119,10 @@ def main():
     if args.demo:
         demo(numbers)
         sys.exit()
-    
-    for line in sparklines(numbers, num_lines=a.num_lines, emph=a.emphasise, verbose=a.verbose):
+
+    for line in sparklines(
+            numbers, num_lines=a.num_lines, emph=a.emphasise,
+            verbose=a.verbose, maximum=a.max):
         print(line)
 
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Run from the root folder with either 'python setup.py test' or 
+Run from the root folder with either 'python setup.py test' or
 'py.test test/test_sparkline.py'.
 """
 
@@ -102,6 +102,6 @@ def test1():
     "Test single values all have the same four pixel high output character."
 
     for i in range(10):
-        res = sparklines([3])
+        res = sparklines([i])
         exp = ['▄']
         assert res == exp

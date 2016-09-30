@@ -105,3 +105,21 @@ def test1():
         res = sparklines([3])
         exp = ['▄']
         assert res == exp
+
+
+def test_empty():
+    "Make sure degenerate cases don't fail"
+    res = sparklines([])
+    exp = ['']
+    # Produces an empty line from the command line
+    #   we might prefer empty output
+    assert res == exp
+
+
+def test_multiline():
+    res = sparklines([1, 5, 8], num_lines=3)
+    exp = [
+        "  █",
+        " ▆█",
+        "▁██"]
+    assert res == exp

@@ -76,12 +76,12 @@ def _check_emphasis(numbers, emph):
     return emphasized
 
 
-def scale_values(numbers, num_lines=1, maximum=None):
+def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     "Scale input numbers to appropriate range."
 
     # find min/max values, ignoring Nones
     filtered = [n for n in numbers if n is not None]
-    min_ = min(filtered)
+    min_ = min(filtered) if minimum is None else minimum
     max_ = max(filtered) if maximum is None else maximum
     dv = max_ - min_
 
@@ -110,12 +110,12 @@ def scale_values(numbers, num_lines=1, maximum=None):
     return values
 
 
-def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, maximum=None):
+def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, minimum=None, maximum=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
     The list of input numbers may contain None values, too, for which the
-    resulting sparkline will contain a blank character (a space). 
+    resulting sparkline will contain a blank character (a space).
 
     Examples:
 
@@ -136,7 +136,7 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, maximum=None):
     # raise warning for negative numbers
     _check_negatives(numbers)
 
-    values = scale_values(numbers, num_lines=num_lines, maximum=maximum)
+    values = scale_values(numbers, num_lines=num_lines, minimum=minimum, maximum=maximum)
 
     # find values to be highlighted
     emphasized = _check_emphasis(numbers, emph) if emph else {}

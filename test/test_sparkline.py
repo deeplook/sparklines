@@ -98,6 +98,22 @@ def test_maximum():
     exp = ['▁▄███']
     assert res == exp
 
+def test_maximum_internal_consistency():
+    res = sparklines([1, 2, 3, 10, 10, 1], maximum=3)
+    exp = sparklines([1, 2, 3, 3, 3, 1], maximum=3)
+    assert res == exp
+
+
+def test_minimum():
+    res = sparklines([0, 0, 11, 12, 13], minimum=10)
+    exp = ['▁▁▃▆█']
+    assert res == exp
+
+def test_minimum_internal_consistency():
+    res = sparklines([0, 0, 11, 12, 13], minimum=10)
+    exp = sparklines([10, 10, 11, 12, 13], minimum=10)
+    assert res == exp
+
 def test1():
     "Test single values all have the same four pixel high output character."
 

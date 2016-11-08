@@ -108,6 +108,13 @@ def main():
     p.add_argument('nums', metavar='VALUE', type=test_valid_number,
         help=help_nums, nargs='*', default=sys.stdin)
 
+    help_roll = '''Start a new graph every PERIOD values and stack.
+    This is useful for data with natural periodicity: for
+    example daily or weekly.
+    '''
+    p.add_argument('-r', '--roll', metavar='PERIOD', type=int,
+        help=help_roll)
+
     a = args = p.parse_args()
 
     if args.version:
@@ -125,7 +132,8 @@ def main():
 
     for line in sparklines(
             numbers, num_lines=a.num_lines, emph=a.emphasise,
-            verbose=a.verbose, minimum=a.min, maximum=a.max):
+            verbose=a.verbose, minimum=a.min, maximum=a.max,
+            roll=args.roll):
         print(line)
 
 

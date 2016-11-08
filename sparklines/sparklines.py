@@ -8,6 +8,8 @@ Please read the file README.rst for more information.
 """
 
 from __future__ import unicode_literals, print_function, division
+
+import itertools
 import re
 import sys
 import warnings
@@ -110,7 +112,8 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     return values
 
 
-def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, minimum=None, maximum=None):
+def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
+        minimum=None, maximum=None, roll=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -158,7 +161,27 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False, minimum=None, 
             else:
                 res = [blocks[int(v)] if not v is None else ' ' for v in values]
             lines.append(''.join(res))
-        return lines
+
+        if roll:
+            return roll_lines(roll, lines)
+        else:
+            return lines
+
+
+def roll_lines(period, lines):
+    "Produce stacked mini-graphs"
+    parts_for_line = [roll_line(period, line) for line in lines]
+    lines_for_periods = list(map(list, zip(*parts_for_line)))
+
+    for period_lines in lines_for_periods:
+        period_lines.append("")
+
+    return list(itertools.chain.from_iterable(lines_for_periods))
+
+
+def roll_line(period, line):
+    for start in range(0, len(line), period):
+        yield line[start: start + period]
 
 
 def demo(nums=[]):

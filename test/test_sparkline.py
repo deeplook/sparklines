@@ -139,3 +139,9 @@ def test_multiline():
         " ▆█",
         "▁██"]
     assert res == exp
+
+
+def test_roll():
+    res = sparklines([1,2, 3, 1, 2, 3, 1, 2], roll=3)
+    exp = ["▁▄█", "", "▁▄█", "", "▁▄", ""]
+    assert res == exp

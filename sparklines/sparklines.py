@@ -113,7 +113,7 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
 
 
 def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
-        minimum=None, maximum=None, roll=None):
+        minimum=None, maximum=None, wrap=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -148,7 +148,7 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
         multi_values = []
         for i in range(num_lines):
             multi_values.append([
-                min(v, 8) if not v is None else None 
+                min(v, 8) if not v is None else None
                 for v in values
             ])
             values = [max(0, v-8) if not v is None else None for v in values]
@@ -162,15 +162,15 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
                 res = [blocks[int(v)] if not v is None else ' ' for v in values]
             lines.append(''.join(res))
 
-        if roll:
-            return roll_lines(roll, lines)
+        if wrap:
+            return wrap_lines(wrap, lines)
         else:
             return lines
 
 
-def roll_lines(period, lines):
+def wrap_lines(period, lines):
     "Produce stacked mini-graphs"
-    parts_for_line = [roll_line(period, line) for line in lines]
+    parts_for_line = [wrap_line(period, line) for line in lines]
     lines_for_periods = list(map(list, zip(*parts_for_line)))
 
     for period_lines in lines_for_periods:
@@ -179,7 +179,7 @@ def roll_lines(period, lines):
     return list(itertools.chain.from_iterable(lines_for_periods))
 
 
-def roll_line(period, line):
+def wrap_line(period, line):
     for start in range(0, len(line), period):
         yield line[start: start + period]
 

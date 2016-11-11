@@ -69,7 +69,8 @@ def test_valid_emphasis(arg):
 
 
 def main():
-    desc = "Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for 3 1 4 1 5 9 2 6."
+    desc = "Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for 3 1 4 1 5 9 2 6. "\
+        "Please add bug reports and suggestions to https://github.com/deeplook/sparklines/issues."
     p = argparse.ArgumentParser(description=desc)
 
     p.add_argument('-v', '--verbose', action='store_true',

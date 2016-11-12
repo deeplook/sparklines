@@ -144,44 +144,52 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
     # find values to be highlighted
     emphasized = _check_emphasis(numbers, emph) if emph else {}
 
-    if num_lines > 0:
+    point_index = 0
+    subgraphs = []
+    for subgraph_values in batch(wrap, values):
         multi_values = []
         for i in range(num_lines):
             multi_values.append([
                 min(v, 8) if not v is None else None
-                for v in values
+                for v in subgraph_values
             ])
-            values = [max(0, v-8) if not v is None else None for v in values]
+            subgraph_values = [max(0, v-8) if not v is None else None for v in subgraph_values]
         multi_values.reverse()
         lines = []
-        for values in multi_values:
+        for subgraph_values in multi_values:
             if HAVE_TERMCOLOR and emphasized:
                 tc = termcolor.colored
-                res = [tc(blocks[int(v)], emphasized.get(i, 'white')) if not v is None else ' ' for (i, v) in enumerate(values)]
+                res = [tc(blocks[int(v)], emphasized.get(point_index + i, 'white')) if not v is None else ' ' for (i, v) in enumerate(subgraph_values)]
             else:
-                res = [blocks[int(v)] if not v is None else ' ' for v in values]
+                res = [blocks[int(v)] if not v is None else ' ' for v in subgraph_values]
             lines.append(''.join(res))
+        subgraphs.append(lines)
+        point_index += len(subgraph_values)
 
-        if wrap:
-            return wrap_lines(wrap, lines)
-        else:
-            return lines
-
-
-def wrap_lines(period, lines):
-    "Produce stacked mini-graphs"
-    parts_for_line = [wrap_line(period, line) for line in lines]
-    lines_for_periods = list(map(list, zip(*parts_for_line)))
-
-    for period_lines in lines_for_periods:
-        period_lines.append("")
-
-    return list(itertools.chain.from_iterable(lines_for_periods))
+    return list_join('', subgraphs)
 
 
-def wrap_line(period, line):
-    for start in range(0, len(line), period):
-        yield line[start: start + period]
+
+def batch(batch_size, items):
+    "Batch items into groups of batch_size"
+    items = list(items)
+    if batch_size is None:
+        return [items]
+    MISSING = object()
+    padded_items = items + [MISSING] * (batch_size - 1)
+    groups = zip(*[padded_items[i::batch_size] for i in range(batch_size)])
+    return [[item for item in group if item != MISSING] for group in groups]
+
+
+def list_join(separator, lists):
+    result = []
+    for lst, _next in zip(lists[:], lists[1:]):
+        result.extend(lst)
+        result.append(separator)
+
+    if lists:
+        result.extend(lists[-1])
+    return result
 
 
 def demo(nums=[]):

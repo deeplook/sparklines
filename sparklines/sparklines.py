@@ -196,7 +196,7 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-    fmt = lambda num: '%g' % num if type(num) is float else 'None'
+    fmt = lambda num: '%g' % num if isinstance(num, (float, int)) else 'None'
     nums1 = map(fmt, nums)
 
     if __name__ == '__main__':

@@ -190,6 +190,9 @@ def test_gaps():
     res = sparklines([1, None, 1, 2])
     exp = ["▁ ▁█"]
     assert exp == res
+    res = sparklines([1, None, 1])
+    exp = ["▄ ▄"]
+    assert exp == res, (exp, res)
 
 
 def strip_ansi(text):

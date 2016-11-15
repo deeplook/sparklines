@@ -88,7 +88,7 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     dv = max_ - min_
 
     # clamp
-    numbers = [max(min(n, max_), min_) for n in numbers]
+    numbers = [max(min(n, max_), min_) if n is not None else None for n in numbers]
 
     if dv == 0:
         values = [4 * num_lines for x in numbers]

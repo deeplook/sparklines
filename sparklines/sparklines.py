@@ -88,10 +88,10 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     dv = max_ - min_
 
     # clamp
-    numbers = [max(min(n, max_), min_) for n in numbers]
+    numbers = [max(min(n, max_), min_) if n is not None else None for n in numbers]
 
     if dv == 0:
-        values = [4 * num_lines for x in numbers]
+        values = [4 * num_lines if x is not None else None for x in numbers]
     elif dv > 0:
         num_blocks = len(blocks) - 1
 
@@ -196,7 +196,7 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-    fmt = lambda num: '%g' % num if type(num) is float else 'None'
+    fmt = lambda num: '%g' % num if isinstance(num, (float, int)) else 'None'
     nums1 = map(fmt, nums)
 
     if __name__ == '__main__':

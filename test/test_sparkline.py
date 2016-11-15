@@ -186,6 +186,15 @@ def test_wrap_escaping():
     assert exp == res, (exp, res)
 
 
+def test_gaps():
+    res = sparklines([1, None, 1, 2])
+    exp = ["▁ ▁█"]
+    assert exp == res
+    res = sparklines([1, None, 1])
+    exp = ["▄ ▄"]
+    assert exp == res, (exp, res)
+
+
 def strip_ansi(text):
     # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python#14693789
     ansi_escape = re.compile(r'\x1b[^m]*m')

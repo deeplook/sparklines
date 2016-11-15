@@ -6,13 +6,14 @@ Run from the root folder with either 'python setup.py test' or
 'py.test test/test_sparkline.py'.
 """
 
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
+
+import os
+import re
 
 import pytest
 
-import re
-
-from sparklines import batch, sparklines, scale_values
+from sparklines import batch, scale_values, sparklines, demo
 from sparklines.__main__ import test_valid_number as is_valid_number
 
 
@@ -193,6 +194,18 @@ def test_gaps():
     res = sparklines([1, None, 1])
     exp = ["▄ ▄"]
     assert exp == res, (exp, res)
+
+
+def test_demo_consistency():
+    toplevel = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    with open(os.path.join(toplevel, 'test', 'demo-output')) as stream:
+        exp = stream.read().decode('utf8')
+    res = demo([])
+
+    with open('/tmp/blah', 'w') as stream:
+        stream.write(res.encode('utf8'))
+
+    assert exp == res, 'Demo output has changed. Verify it and update demo-output'
 
 
 def strip_ansi(text):

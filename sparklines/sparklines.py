@@ -88,10 +88,10 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     dv = max_ - min_
 
     # clamp
-    numbers = [max(min(n, max_), min_) for n in numbers]
+    numbers = [max(min(n, max_), min_) if n is not None else None for n in numbers]
 
     if dv == 0:
-        values = [4 * num_lines for x in numbers]
+        values = [4 * num_lines if x is not None else None for x in numbers]
     elif dv > 0:
         num_blocks = len(blocks) - 1
 
@@ -196,40 +196,43 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-    fmt = lambda num: '%g' % num if type(num) is float else 'None'
-    nums1 = map(fmt, nums)
+    fmt = lambda num: '%g' % num if isinstance(num, (float, int)) else 'None'
+    nums1 = list(map(fmt, nums))
 
     if __name__ == '__main__':
         prog = sys.argv[0]
     else:
         prog = 'sparklines'
 
+    result = []
 
-    print('Usage examples (command-line and programmatic use):')
-    print('')
 
-    print('- Standard one-line sparkline')
-    print('%s %s' % (prog, ' '.join(nums1)))
-    print('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
-    print(sparklines(nums)[0])
-    print('')
+    result.append('Usage examples (command-line and programmatic use):')
+    result.append('')
 
-    print('- Multi-line sparkline (n=2)')
-    print('%s -n 2 %s' % (prog, ' '.join(nums1)))
-    print('>>> for line in sparklines([%s], num_lines=2): print(line)' % ', '.join(nums1))
+    result.append('- Standard one-line sparkline')
+    result.append('%s %s' % (prog, ' '.join(nums1)))
+    result.append('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
+    result.append(sparklines(nums)[0])
+    result.append('')
+
+    result.append('- Multi-line sparkline (n=2)')
+    result.append('%s -n 2 %s' % (prog, ' '.join(nums1)))
+    result.append('>>> for line in sparklines([%s], num_lines=2): print(line)' % ', '.join(nums1))
     for line in sparklines(nums, num_lines=2):
-        print(line)
-    print('')
+        result.append(line)
+    result.append('')
 
-    print('- Multi-line sparkline (n=3)')
-    print('%s -n 3 %s' % (prog, ' '.join(nums1)))
-    print('>>> for line in sparklines([%s], num_lines=3): print(line)' % ', '.join(nums1))
+    result.append('- Multi-line sparkline (n=3)')
+    result.append('%s -n 3 %s' % (prog, ' '.join(nums1)))
+    result.append('>>> for line in sparklines([%s], num_lines=3): print(line)' % ', '.join(nums1))
     for line in sparklines(nums, num_lines=3):
-        print(line)
-    print('')
+        result.append(line)
+    result.append('')
 
     nums = nums + [None] + list(reversed(nums[:]))
-    print('- Standard one-line sparkline with gap')
-    print('%s %s' % (prog, ' '.join(nums1)))
-    print('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
-    print(sparklines(nums)[0])
+    result.append('- Standard one-line sparkline with gap')
+    result.append('%s %s' % (prog, ' '.join(map(str, nums))))
+    result.append('>>> print(sparklines([%s])[0])' % ', '.join(map(str, nums)))
+    result.append(sparklines(nums)[0])
+    return '\n'.join(result) + '\n'

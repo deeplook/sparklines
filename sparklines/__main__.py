@@ -128,7 +128,7 @@ def main():
     numbers = [_float_or_none(n) for n in numbers]
 
     if args.demo:
-        demo(numbers)
+        print(demo(numbers))
         sys.exit()
 
     for line in sparklines(

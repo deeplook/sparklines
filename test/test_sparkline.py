@@ -17,6 +17,12 @@ from sparklines import batch, scale_values, sparklines, demo
 from sparklines.__main__ import test_valid_number as is_valid_number
 
 
+def strip_ansi(text):
+    # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python#14693789
+    ansi_escape = re.compile(r'\x1b[^m]*m')
+    return ansi_escape.sub('', text)
+
+
 def test_parse_float():
     "Test parsing input numbers."
 
@@ -178,7 +184,7 @@ def test_wrap_consistency():
 def test_wrap_escaping_consistency():
     no_emph = sparklines([1,2, 3, 1, 2, 3, 1, 2], wrap=3)
     stripped_emph = map(strip_ansi, sparklines([1,2, 3, 1, 2, 3, 1, 2], wrap=3, emph=['green:le:1.0']))
-    assert no_emph == stripped_emph
+    assert no_emph == list(stripped_emph)
 
 
 def test_wrap_escaping():
@@ -197,18 +203,20 @@ def test_gaps():
 
 
 def test_demo_consistency():
+    ## todo: remove encoding hacks
     toplevel = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     with open(os.path.join(toplevel, 'test', 'demo-output')) as stream:
-        exp = stream.read().decode('utf8')
+        exp = stream.read()
+        try:
+            exp = exp.decode('utf8')
+        except AttributeError:
+            pass
     res = demo([])
 
     with open('/tmp/blah', 'w') as stream:
-        stream.write(res.encode('utf8'))
+        try:
+            stream.write(res) # .encode('utf8'))
+        except UnicodeEncodeError:
+            stream.write(res.encode('utf8'))
 
-    assert exp == res, 'Demo output has changed. Verify it and update demo-output'
-
-
-def strip_ansi(text):
-    # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python#14693789
-    ansi_escape = re.compile(r'\x1b[^m]*m')
-    return ansi_escape.sub('', text)
+    assert exp == res, 'Demo output has changed. Verify it and update demo-output!'

@@ -69,8 +69,9 @@ def test_valid_emphasis(arg):
 
 
 def main():
-    desc = "Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for 3 1 4 1 5 9 2 6. "\
-        "Please add bug reports and suggestions to https://github.com/deeplook/sparklines/issues."
+    desc = '''Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
+        3 1 4 1 5 9 2 6. Please add bug reports and suggestions to
+        https://github.com/deeplook/sparklines/issues.'''
     p = argparse.ArgumentParser(description=desc)
 
     p.add_argument('-v', '--verbose', action='store_true',
@@ -79,14 +80,16 @@ def main():
     p.add_argument('-V', '--version', action='store_true',
         help='Display version number and quit.')
 
+    help_d = '''Show a few usage examples for given (mandatory) input
+        values. All other options are ignored.'''
     p.add_argument('-d', '--demo', action='store_true',
-        help='Show a few usage examples for given (mandatory) input values.')
+        help=help_d)
 
     p.add_argument('-m', '--min', type=float,
-        help='Use this value as the minimum for scaling')
+        help='Use this value as the minimum for scaling.')
 
     p.add_argument('-M', '--max', type=float,
-        help='Use this value as the maximum for scaling')
+        help='Use this value as the maximum for scaling.')
 
     help_emph = '''Emphasise input values below or above a certain
         threshold (e.g. "green:gt:5.0"). This option takes one argument

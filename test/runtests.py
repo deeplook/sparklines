@@ -3460,7 +3460,7 @@ class DictImporter(object):
 
         co = compile(s, fullname, 'exec')
         module = sys.modules.setdefault(fullname, ModuleType(fullname))
-        module.__file__ = "%s/%s" % (__file__, fullname)
+        module.__file__ = "{0!s}/{1!s}".format(__file__, fullname)
         module.__loader__ = self
         if is_pkg:
             module.__path__ = [fullname]

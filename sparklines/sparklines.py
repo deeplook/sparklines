@@ -48,7 +48,7 @@ def _check_negatives(numbers):
     negatives = filter(lambda x: x < 0, filter(None, numbers))
     if any(negatives):
         neg_values = ', '.join(map(str, negatives))
-        msg = 'Found negative value(s): %s. ' % neg_values
+        msg = 'Found negative value(s): {0!s}. '.format(neg_values)
         msg += 'While not forbidden, the output will look unexpected.'
         warnings.warn(msg)
 
@@ -196,7 +196,7 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-    fmt = lambda num: '%g' % num if isinstance(num, (float, int)) else 'None'
+    fmt = lambda num: '{0:g}'.format(num) if isinstance(num, (float, int)) else 'None'
     nums1 = list(map(fmt, nums))
 
     if __name__ == '__main__':
@@ -211,28 +211,28 @@ def demo(nums=[]):
     result.append('')
 
     result.append('- Standard one-line sparkline')
-    result.append('%s %s' % (prog, ' '.join(nums1)))
-    result.append('>>> print(sparklines([%s])[0])' % ', '.join(nums1))
+    result.append('{0!s} {1!s}'.format(prog, ' '.join(nums1)))
+    result.append('>>> print(sparklines([{0!s}])[0])'.format(', '.join(nums1)))
     result.append(sparklines(nums)[0])
     result.append('')
 
     result.append('- Multi-line sparkline (n=2)')
-    result.append('%s -n 2 %s' % (prog, ' '.join(nums1)))
-    result.append('>>> for line in sparklines([%s], num_lines=2): print(line)' % ', '.join(nums1))
+    result.append('{0!s} -n 2 {1!s}'.format(prog, ' '.join(nums1)))
+    result.append('>>> for line in sparklines([{0!s}], num_lines=2): print(line)'.format(', '.join(nums1)))
     for line in sparklines(nums, num_lines=2):
         result.append(line)
     result.append('')
 
     result.append('- Multi-line sparkline (n=3)')
-    result.append('%s -n 3 %s' % (prog, ' '.join(nums1)))
-    result.append('>>> for line in sparklines([%s], num_lines=3): print(line)' % ', '.join(nums1))
+    result.append('{0!s} -n 3 {1!s}'.format(prog, ' '.join(nums1)))
+    result.append('>>> for line in sparklines([{0!s}], num_lines=3): print(line)'.format(', '.join(nums1)))
     for line in sparklines(nums, num_lines=3):
         result.append(line)
     result.append('')
 
     nums = nums + [None] + list(reversed(nums[:]))
     result.append('- Standard one-line sparkline with gap')
-    result.append('%s %s' % (prog, ' '.join(map(str, nums))))
-    result.append('>>> print(sparklines([%s])[0])' % ', '.join(map(str, nums)))
+    result.append('{0!s} {1!s}'.format(prog, ' '.join(map(str, nums))))
+    result.append('>>> print(sparklines([{0!s}])[0])'.format(', '.join(map(str, nums))))
     result.append(sparklines(nums)[0])
     return '\n'.join(result) + '\n'

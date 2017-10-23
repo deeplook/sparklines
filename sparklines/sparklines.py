@@ -14,7 +14,7 @@ import re
 import sys
 import warnings
 
-from future.builtins import round # bankers' rounding for Python 2
+from future.builtins import round  # bankers' rounding for Python 2
 
 
 # handle different file types in Python 2 and 3
@@ -36,12 +36,6 @@ __version__ = '0.4.1'
 blocks = " ▁▂▃▄▅▆▇█"
 
 
-def _rescale(x1, y1, x2, y2, x):
-    "Evaluate a straight line through two points (x1, y1) and (x2, y2) at x."
-
-    return (y2-y1) / (x2-x1) * x + (x2*y1 - x1-y2) / (x2-x1)
-
-
 def _check_negatives(numbers):
     "Raise warning for negative numbers."
 
@@ -58,7 +52,7 @@ def _check_emphasis(numbers, emph):
 
     pat = '(\w+)\:(eq|gt|ge|lt|le)\:(.+)'
     # find values to be highlighted
-    emphasized = {} # index: color
+    emphasized = {}  # index: color
     for (i, n) in enumerate(numbers):
         if n is None:
             continue
@@ -88,32 +82,30 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     dv = max_ - min_
 
     # clamp
-    numbers = [max(min(n, max_), min_) if n is not None else None for n in numbers]
+    numbers = [max(min(n, max_), min_)
+               if n is not None else None for n in numbers]
 
     if dv == 0:
         values = [4 * num_lines if x is not None else None for x in numbers]
     elif dv > 0:
         num_blocks = len(blocks) - 1
 
+        min_index = 1
+        max_index = num_lines * num_blocks
+
         values = [
-            (num_blocks - 1.) / dv * x + (max_*1. - min_ * num_blocks) / dv
-                if not x is None else None
+            ((max_index - min_index) * (x - min_)) / dv + min_index
+            if not x is None else None
             for x in numbers
         ]
 
-        if num_lines > 1:
-            m = min([n for n in values if n is not None])
-            values = [
-                _rescale(m, m, max_, num_lines * max_, v)
-                    if not v is None else None
-                for v in values
-            ]
         values = [round(v) or 1 if not v is None else None for v in values]
+
     return values
 
 
 def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
-        minimum=None, maximum=None, wrap=None):
+               minimum=None, maximum=None, wrap=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -139,7 +131,8 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
     # raise warning for negative numbers
     _check_negatives(numbers)
 
-    values = scale_values(numbers, num_lines=num_lines, minimum=minimum, maximum=maximum)
+    values = scale_values(numbers, num_lines=num_lines,
+                          minimum=minimum, maximum=maximum)
 
     # find values to be highlighted
     emphasized = _check_emphasis(numbers, emph) if emph else {}
@@ -153,21 +146,23 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
                 min(v, 8) if not v is None else None
                 for v in subgraph_values
             ])
-            subgraph_values = [max(0, v-8) if not v is None else None for v in subgraph_values]
+            subgraph_values = [
+                max(0, v - 8) if not v is None else None for v in subgraph_values]
         multi_values.reverse()
         lines = []
         for subgraph_values in multi_values:
             if HAVE_TERMCOLOR and emphasized:
                 tc = termcolor.colored
-                res = [tc(blocks[int(v)], emphasized.get(point_index + i, 'white')) if not v is None else ' ' for (i, v) in enumerate(subgraph_values)]
+                res = [tc(blocks[int(v)], emphasized.get(point_index + i, 'white'))
+                       if not v is None else ' ' for (i, v) in enumerate(subgraph_values)]
             else:
-                res = [blocks[int(v)] if not v is None else ' ' for v in subgraph_values]
+                res = [
+                    blocks[int(v)] if not v is None else ' ' for v in subgraph_values]
             lines.append(''.join(res))
         subgraphs.append(lines)
         point_index += len(subgraph_values)
 
     return list_join('', subgraphs)
-
 
 
 def batch(batch_size, items):
@@ -196,7 +191,9 @@ def demo(nums=[]):
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-    fmt = lambda num: '{0:g}'.format(num) if isinstance(num, (float, int)) else 'None'
+
+    def fmt(num): return '{0:g}'.format(
+        num) if isinstance(num, (float, int)) else 'None'
     nums1 = list(map(fmt, nums))
 
     if __name__ == '__main__':
@@ -205,7 +202,6 @@ def demo(nums=[]):
         prog = 'sparklines'
 
     result = []
-
 
     result.append('Usage examples (command-line and programmatic use):')
     result.append('')
@@ -218,14 +214,16 @@ def demo(nums=[]):
 
     result.append('- Multi-line sparkline (n=2)')
     result.append('{0!s} -n 2 {1!s}'.format(prog, ' '.join(nums1)))
-    result.append('>>> for line in sparklines([{0!s}], num_lines=2): print(line)'.format(', '.join(nums1)))
+    result.append('>>> for line in sparklines([{0!s}], num_lines=2): print(line)'.format(
+        ', '.join(nums1)))
     for line in sparklines(nums, num_lines=2):
         result.append(line)
     result.append('')
 
     result.append('- Multi-line sparkline (n=3)')
     result.append('{0!s} -n 3 {1!s}'.format(prog, ' '.join(nums1)))
-    result.append('>>> for line in sparklines([{0!s}], num_lines=3): print(line)'.format(', '.join(nums1)))
+    result.append('>>> for line in sparklines([{0!s}], num_lines=3): print(line)'.format(
+        ', '.join(nums1)))
     for line in sparklines(nums, num_lines=3):
         result.append(line)
     result.append('')
@@ -233,6 +231,7 @@ def demo(nums=[]):
     nums = nums + [None] + list(reversed(nums[:]))
     result.append('- Standard one-line sparkline with gap')
     result.append('{0!s} {1!s}'.format(prog, ' '.join(map(str, nums))))
-    result.append('>>> print(sparklines([{0!s}])[0])'.format(', '.join(map(str, nums))))
+    result.append('>>> print(sparklines([{0!s}])[0])'.format(
+        ', '.join(map(str, nums))))
     result.append(sparklines(nums)[0])
     return '\n'.join(result) + '\n'

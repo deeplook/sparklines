@@ -67,7 +67,7 @@ def test_scale1():
     "Test scale..."
 
     res = scale_values([1, 2, 3], num_lines=2)
-    exp = [1., 9., 18.]
+    exp = [1., 8., 16.]
     assert res == exp
 
 

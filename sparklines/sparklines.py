@@ -36,12 +36,6 @@ __version__ = '0.4.1'
 blocks = " ▁▂▃▄▅▆▇█"
 
 
-def _rescale(x1, y1, x2, y2, x):
-    "Evaluate a straight line through two points (x1, y1) and (x2, y2) at x."
-
-    return (y2-y1) / (x2-x1) * x + (x2*y1 - x1-y2) / (x2-x1)
-
-
 def _check_negatives(numbers):
     "Raise warning for negative numbers."
 
@@ -95,19 +89,14 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     elif dv > 0:
         num_blocks = len(blocks) - 1
 
+        min_index = 1.
+        max_index = num_lines * num_blocks
+
         values = [
-            (num_blocks - 1.) / dv * x + (max_*1. - min_ * num_blocks) / dv
-                if not x is None else None
-            for x in numbers
+            ((max_index - min_index) * (x - min_)) / dv + min_index
+            if not x is None else None for x in numbers
         ]
 
-        if num_lines > 1:
-            m = min([n for n in values if n is not None])
-            values = [
-                _rescale(m, m, max_, num_lines * max_, v)
-                    if not v is None else None
-                for v in values
-            ]
         values = [round(v) or 1 if not v is None else None for v in values]
     return values
 

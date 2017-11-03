@@ -9,13 +9,13 @@ sparklines 3 1 4 1 5 9 2 6
 sparklines -n 2 3 1 4 1 5 9 2 6
 >>> for line in sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=2): print(line)
      █ ▂
-▅▁▆▁██▃█
+▅▁▇▁██▃█
 
 - Multi-line sparkline (n=3)
 sparklines -n 3 3 1 4 1 5 9 2 6
 >>> for line in sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=3): print(line)
      █  
-  ▁ ▄█ ▇
+  ▂ ▄█ ▇
 ▇▁█▁██▄█
 
 - Standard one-line sparkline with gap

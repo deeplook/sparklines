@@ -31,7 +31,8 @@ Sample output
 
 This is a recorded sample session illustrating how to use ``sparklines`` (as
 GitHub doesn't render embedded Asciinema_ recordings you'll see here an image
-pointing to the respectinve asciicast):
+pointing to the respective
+`asciicast <https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep>`_):
 
 .. image:: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png
    :target: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep

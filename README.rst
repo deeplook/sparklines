@@ -21,7 +21,7 @@ and less like bars are a real challenge, because they would need multiple
 characters with a single horizontal line on different vertical positions. This
 would work only with a dedicated font, which is way beyond the scope of this
 tool and which would significantly complicate its usage. So we stick to these
-characters: "▁▂▃▄▅▆▇█", including a blank when there is no value.
+characters: "▁▂▃▄▅▆▇█", and use a blank for missing values.
 
 This code was tested ok for Python 2.6 to 2.7 and 3.2 to 3.5.
 
@@ -29,7 +29,9 @@ This code was tested ok for Python 2.6 to 2.7 and 3.2 to 3.5.
 Sample output
 -------------
 
-Here's a recorded sample session illustrating how to use ``sparklines``:
+This is a recorded sample session illustrating how to use ``sparklines`` (as
+GitHub doesn't render embedded Asciinema_ recordings you'll see here an image
+pointing to the respectinve asciicast):
 
 .. image:: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png
    :target: https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep
@@ -80,7 +82,7 @@ Usage
 Please note that the samples below might look a little funky (misaligned or 
 even colored) in some browsers, but it should be totally fine when you print
 this in your terminal, Python or IPython session or your Python IDE of choice.
-The following images shows better what you should expect than the copied sample
+Figure 2 below might sshow better what you should expect than the copied sample
 code thereafter:
 
 .. figure:: https://raw.githubusercontent.com/deeplook/sparklines/master/example_python.png
@@ -146,8 +148,11 @@ extra features I was missing, like:
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
 - issuing warnings for negative values (allowed, but misleading)
-- (todo) highlighting single values exceeding some threshold with a different
-  color using ``termcolor``
+- highlighting values exceeding some threshold with a different
+  color (if ``termcolor`` package is available)
+- wrapping long sparklines at some max. length
+- (todo) adding separator characters like ``:`` at regular intervals
 
+.. _Asciinema: https://asciinema.org
 .. _sparklines: http://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR
 .. _on Wikipedia: https://en.wikipedia.org/wiki/Sparkline

@@ -58,13 +58,13 @@ Examples for the code below:
 Installation
 ------------
 
-You can clone this repository and install it via ``python setup.py install``
+You can install this package using ``pip install sparklines`` from the `Python
+Package Index`_.
+You can also clone this repository and install it via ``python setup.py install``
 or ``pip install -e .``.
 After installing, you will have access system-wide (or in your virtualenv
-if you have used that) to ``sparklines`` programmatically or via the
-command-line. At some later time it will be also available via 
-``pip install sparklines`` from the Python Package Index.
-
+if you have used that) to ``sparklines``, programmatically as well as via a
+command-line tool with the same name.
 
 Test
 ----
@@ -155,5 +155,6 @@ extra features I was missing, like:
 - (todo) adding separator characters like ``:`` at regular intervals
 
 .. _Asciinema: https://asciinema.org
+.. _Python Package Index: https://pypi.python.org/pypi/sparklines/
 .. _sparklines: http://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR
 .. _on Wikipedia: https://en.wikipedia.org/wiki/Sparkline

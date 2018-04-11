@@ -28,7 +28,7 @@ setuptools.setup(
     keywords='visualization, chart, tool',
     url='https://github.com/deeplook/sparklines',
     packages=setuptools.find_packages(exclude='test'),
-    long_description=open('README.rst').read(),
+    long_description=open('README.rst', encoding='utf-8').read(),
     install_requires=[
         # 'termcolor',
         'future',

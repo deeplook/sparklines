@@ -1,8 +1,6 @@
 import setuptools
 import distutils.core
 
-from sparklines.sparklines import __version__
-
 
 class PyTest(distutils.core.Command):
     user_options = []
@@ -22,7 +20,7 @@ class PyTest(distutils.core.Command):
 
 setuptools.setup(
     name='sparklines',
-    version=__version__,
+    version='0.4.1',
     author='Dinu Gherman',
     author_email='gherman@darwin.in-berlin.de',
     description='Generate sparklines for numbers using Unicode characters only.',

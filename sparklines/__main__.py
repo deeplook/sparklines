@@ -24,9 +24,9 @@ except ImportError:
     HAVE_TERMCOLOR = False
 
 if sys.version_info.major >= 3:
-    from sparklines.sparklines import sparklines, demo, __version__
+    from sparklines.sparklines import sparklines, demo
 else:
-    from sparklines import sparklines, demo, __version__
+    from sparklines import sparklines, demo
 
 
 def _float_or_none(num_str):
@@ -122,7 +122,7 @@ def main():
     a = args = p.parse_args()
 
     if args.version:
-        print(__version__)
+        print('0.4.1')
         sys.exit()
 
     numbers = args.nums

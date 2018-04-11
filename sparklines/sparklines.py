@@ -31,8 +31,6 @@ except ImportError:
     HAVE_TERMCOLOR = False
 
 
-__version__ = '0.4.1'
-
 blocks = " ▁▂▃▄▅▆▇█"
 
 

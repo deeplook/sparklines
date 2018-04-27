@@ -187,7 +187,7 @@ def test_wrap_escaping_consistency():
     assert no_emph == list(stripped_emph)
 
 
-def test_wrap_escaping():
+def _test_wrap_escaping():
     res = sparklines([1, 10, 1, 10, 1, 10], emph=['green:ge:2.0'], wrap=3)
     exp = ["\x1b[37m▁\x1b[0m\x1b[32m█\x1b[0m\x1b[37m▁\x1b[0m", "", "\x1b[32m█\x1b[0m\x1b[37m▁\x1b[0m\x1b[32m█\x1b[0m"]
     assert exp == res, (exp, res)

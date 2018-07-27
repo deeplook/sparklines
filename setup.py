@@ -21,7 +21,7 @@ class PyTest(distutils.core.Command):
 
 setuptools.setup(
     name='sparklines',
-    version='0.4.1',
+    version='0.4.2',
     author='Dinu Gherman',
     author_email='gherman@darwin.in-berlin.de',
     description='Generate sparklines for numbers using Unicode characters only.',
@@ -42,6 +42,7 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'License :: OSI Approved :: GNU General Public License (GPL)'
     ],
     cmdclass={'test': PyTest},

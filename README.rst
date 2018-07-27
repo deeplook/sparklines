@@ -7,7 +7,7 @@ Sparklines
   :target: https://travis-ci.org/deeplook/sparklines
 
 .. |pypi| image:: https://img.shields.io/pypi/v/sparklines.svg
-  :target: https://pypi.python.org/pypi/sparklines
+  :target: https://pypi.org/project/sparklines/
 
 This Python package implements Edward Tufte's concept of sparklines_, but
 limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this I likely not displayed

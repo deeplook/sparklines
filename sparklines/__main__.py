@@ -122,7 +122,7 @@ def main():
     a = args = p.parse_args()
 
     if args.version:
-        print('0.4.1')
+        print('0.4.2')  # FIXME: needs to be taken again from setup.py...
         sys.exit()
 
     numbers = args.nums

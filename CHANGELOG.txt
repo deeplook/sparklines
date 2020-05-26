@@ -24,9 +24,13 @@
 
 0.4.1: Fourth release:
 
-- improved command-line option -e/--emphasise to take only one argument,
+- improved command-line option -e/--emphasize to take only one argument,
   but can be used repeatedly now, which reduces unexpected behaviour
 
 0.4.2: Fifth release:
 
 - fixed a buglet preventing pip install without future already installed
+
+?: Next release:
+
+- drop Python 2 support

@@ -91,12 +91,12 @@ def main():
     p.add_argument('-M', '--max', type=float,
         help='Use this value as the maximum for scaling.')
 
-    help_emph = '''Emphasise input values below or above a certain
+    help_emph = '''Emphasize input values below or above a certain
         threshold (e.g. "green:gt:5.0"). This option takes one argument
         value, but can be given repeatedly. Works only when optional
         dependancy "termcolor" is met (which is {0!s} here). Otherwise
         has no effect.'''.format(HAVE_TERMCOLOR)
-    p.add_argument('-e', '--emphasise', metavar='STRING',
+    p.add_argument('-e', '--emphasize', metavar='STRING',
         type=test_valid_emphasis, default=[], action='append',
         help=help_emph)
 
@@ -135,7 +135,7 @@ def main():
         sys.exit()
 
     for line in sparklines(
-            numbers, num_lines=a.num_lines, emph=a.emphasise,
+            numbers, num_lines=a.num_lines, emph=a.emphasize,
             verbose=a.verbose, minimum=a.min, maximum=a.max,
             wrap=args.wrap):
         print(line)

@@ -93,7 +93,7 @@ Usage
 Please note that the samples below might look a little funky (misaligned or 
 even colored) in some browsers, but it should be totally fine when you print
 this in your terminal, Python or IPython session or your Python IDE of choice.
-Figure 2 below might sshow better what you should expect than the copied sample
+Figure 2 below might show better what you should expect than the copied sample
 code thereafter:
 
 .. figure:: https://raw.githubusercontent.com/deeplook/sparklines/master/example_python.png

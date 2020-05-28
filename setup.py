@@ -38,11 +38,16 @@ setuptools.setup(
         'console_scripts': ['sparklines=sparklines.__main__:main']
     },
     classifiers=[
+        "Development Status :: 4 - Beta",
         'Environment :: Console',
         'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Other Audience',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'License :: OSI Approved :: GNU General Public License (GPL)'
     ],
     cmdclass={'test': PyTest},

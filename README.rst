@@ -6,9 +6,21 @@ Sparklines
 .. |ci| image:: http://img.shields.io/travis/deeplook/sparklines.svg
   :target: https://travis-ci.org/deeplook/sparklines
 
+.. |pypi| image:: https://img.shields.io/pypi/pyversions/sparklines.svg
+  :target: https://pypi.org/project/sparklines
+  
 .. |pypi| image:: https://img.shields.io/pypi/v/sparklines.svg
   :target: https://pypi.org/project/sparklines/
 
+.. |pypi| image:: https://img.shields.io/pypi/status/sparklines.svg
+  :target: https://pypi.org/project/sparklines
+
+.. |pypi| image:: https://img.shields.io/pypi/format/sparklines.svg
+  :target: https://pypi.org/project/sparklines
+
+.. |pypi| image:: https://img.shields.io/pypi/l/sparklines.svg
+  :target: https://pypi.org/project/sparklines
+  
 This Python package implements Edward Tufte's concept of sparklines_, but
 limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this I likely not displayed
 correctly in every browser). You can find more information about sparklines

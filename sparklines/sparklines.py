@@ -99,7 +99,7 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
     return values
 
 
-def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
+def sparklines(numbers=None, num_lines=1, emph=None, verbose=False,
         minimum=None, maximum=None, wrap=None):
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
@@ -117,6 +117,8 @@ def sparklines(numbers=[], num_lines=1, emph=None, verbose=False,
             '▅▁▆▁██▃█'
         ]
     """
+    if numbers is None:
+        numbers = []
 
     assert num_lines > 0
 
@@ -179,7 +181,9 @@ def list_join(separator, lists):
     return result
 
 
-def demo(nums=[]):
+def demo(nums=None):
+    if nums is None:
+        nums = []
     "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]

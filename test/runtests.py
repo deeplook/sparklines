@@ -3433,7 +3433,7 @@ import base64
 import zlib
 
 
-class DictImporter(object):
+class DictImporter:
     def __init__(self, sources):
         self.sources = sources
 

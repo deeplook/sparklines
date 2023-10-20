@@ -212,7 +212,7 @@ def test_gaps():
 def test_demo_consistency():
     ## todo: remove encoding hacks
     toplevel = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    with open(os.path.join(toplevel, "test", "demo-output")) as stream:
+    with open(os.path.join(toplevel, "tests", "demo-output")) as stream:
         exp = stream.read()
         try:
             exp = exp.decode("utf8")

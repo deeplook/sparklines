@@ -33,5 +33,6 @@
 
 ?: Next release:
 
-- drop Python 2 support
-- replace Travis build with GitHub build action
+- dropped Python 2 support
+- replaced Travis build with GitHub build action
+- removed minified pytest code

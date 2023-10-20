@@ -1,7 +1,5 @@
 import io
 import setuptools
-# import distutils.core
-
 
 setuptools.setup(
     name="sparklines",
@@ -30,8 +28,4 @@ setuptools.setup(
         "Programming Language :: Python :: Implementation :: PyPy",
         "License :: OSI Approved :: GNU General Public License (GPL)",
     ],
-    # cmdclass={"test": PyTest},
-    package_data={
-        # 'sparklines': ['foo.csv'],
-    },
 )

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂▅.
@@ -7,22 +6,9 @@ Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂
 Please read the file README.rst for more information.
 """
 
-from __future__ import unicode_literals, print_function, division
-
 import re
 import sys
 import warnings
-
-from future.builtins import round  # bankers' rounding for Python 2
-
-
-# handle different file types in Python 2 and 3
-try:
-    import io
-
-    file = io.IOBase
-except ImportError:
-    pass
 
 try:
     import termcolor
@@ -36,7 +22,7 @@ blocks = " ▁▂▃▄▅▆▇█"
 
 
 def _check_negatives(numbers):
-    "Raise warning for negative numbers."
+    """Raise warning for negative numbers."""
 
     negatives = filter(lambda x: x < 0, filter(None, numbers))
     if any(negatives):
@@ -47,7 +33,7 @@ def _check_negatives(numbers):
 
 
 def _check_emphasis(numbers, emph):
-    "Find index postions in list of numbers to be emphasized according to emph."
+    """Find index postions in list of numbers to be emphasized according to emph."""
 
     pat = "(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
     # find values to be highlighted
@@ -72,7 +58,7 @@ def _check_emphasis(numbers, emph):
 
 
 def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
-    "Scale input numbers to appropriate range."
+    """Scale input numbers to appropriate range."""
 
     # find min/max values, ignoring Nones
     filtered = [n for n in numbers if n is not None]
@@ -179,7 +165,7 @@ def sparklines(
 
 
 def batch(batch_size, items):
-    "Batch items into groups of batch_size"
+    """Batch items into groups of batch_size."""
     items = list(items)
     if batch_size is None:
         return [items]
@@ -201,9 +187,9 @@ def list_join(separator, lists):
 
 
 def demo(nums=None):
+    """Print a few usage examples on stdout."""
     if nums is None:
         nums = []
-    "Print a few usage examples on stdout."
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
 

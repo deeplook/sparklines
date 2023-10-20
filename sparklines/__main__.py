@@ -1,23 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 CLI entry point for the program.
 """
 
-from __future__ import unicode_literals, print_function
+import argparse
 import importlib.util
 import re
 import sys
-import argparse
-
-# handle different file types in Python 2 and 3
-try:
-    import io
-
-    file = io.IOBase
-except ImportError:
-    pass
 
 if importlib.util.find_spec("termcolor"):
     HAVE_TERMCOLOR = True
@@ -31,7 +21,7 @@ else:
 
 
 def _float_or_none(num_str):
-    "Convert a string to a float if possible or None."
+    """Convert a string to a float if possible or None."""
 
     try:
         res = float(num_str)
@@ -41,7 +31,7 @@ def _float_or_none(num_str):
 
 
 def test_valid_number(arg):
-    "Argparse validator for input numbers, basically floats or null/none."
+    """Argparse validator for input numbers, basically floats or null/none."""
     # https://stackoverflow.com/questions/385558/extract-float-double-value
 
     # ok if we find (can parse) a float, returning the respective substring
@@ -60,7 +50,7 @@ def test_valid_number(arg):
 
 
 def test_valid_emphasis(arg):
-    "Argparse validator for color filter expressions."
+    """Argparse validator for color filter expressions."""
 
     pat = "\w+\:(eq|gt|ge|lt|le)\:.+"
     if re.match(pat, arg):

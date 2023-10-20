@@ -1,12 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Run from the root folder with either 'python setup.py test' or
 'py.test test/test_sparkline.py'.
 """
-
-from __future__ import print_function, unicode_literals
 
 import os
 import re

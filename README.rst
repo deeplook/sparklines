@@ -10,6 +10,9 @@ Sparklines
 .. image:: https://img.shields.io/pypi/v/sparklines.svg
   :target: https://pypi.org/project/sparklines/
 
+.. image:: https://static.pepy.tech/badge/sparklines/month
+  :target: https://pepy.tech/project/sparklines
+
 .. image:: https://img.shields.io/pypi/status/sparklines.svg
   :target: https://pypi.org/project/sparklines
 

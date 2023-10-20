@@ -15,13 +15,14 @@ from sparklines.__main__ import test_valid_number as is_valid_number
 
 
 def strip_ansi(text):
+    """Remove ANSI escape sequences from a text."""
     # http://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python#14693789
     ansi_escape = re.compile(r"\x1b[^m]*m")
     return ansi_escape.sub("", text)
 
 
 def test_parse_float():
-    "Test parsing input numbers."
+    """Test parsing input numbers."""
 
     t = is_valid_number
 
@@ -53,7 +54,7 @@ def test_parse_float():
 
 
 def test_scale0():
-    "Test scale..."
+    """Test scale..."""
 
     res = scale_values([1, 2, 3])
     exp = [1.0, 4.0, 8.0]
@@ -61,7 +62,7 @@ def test_scale0():
 
 
 def test_scale1():
-    "Test scale..."
+    """Test scale..."""
 
     res = scale_values([1, 2, 3], num_lines=2)
     exp = [1.0, 8.0, 16.0]
@@ -77,7 +78,7 @@ def test_batch():
 
 
 def test_scale_pi():
-    "Test scale Pi."
+    """Test scale Pi."""
 
     res = scale_values([3, 1, 4, 1, 5, 9, 2, 6])
     exp = [3, 1, 4, 1, 4, 8, 2, 5]
@@ -85,7 +86,7 @@ def test_scale_pi():
 
 
 def test_pi():
-    "Test first eight digits of Pi."
+    """Test first eight digits of Pi."""
 
     res = sparklines([3, 1, 4, 1, 5, 9, 2, 6])
     exp = ["▃▁▄▁▄█▂▅"]
@@ -93,7 +94,7 @@ def test_pi():
 
 
 def test_minmax():
-    "Test two values, min and max."
+    """Test two values, min and max."""
 
     res = sparklines([1, 8])
     exp = ["▁█"]  # 1, 8
@@ -101,7 +102,7 @@ def test_minmax():
 
 
 def test_rounding0():
-    "Test two values, min and max."
+    """Test two values, min and max."""
 
     res = sparklines([1, 5, 8])
     exp = ["▁▅█"]  # 1, 5, 8
@@ -133,7 +134,7 @@ def test_minimum_internal_consistency():
 
 
 def test1():
-    "Test single values all have the same four pixel high output character."
+    """Test single values all have the same four pixel high output character."""
 
     for i in range(10):
         res = sparklines([i])
@@ -142,7 +143,8 @@ def test1():
 
 
 def test_empty():
-    "Make sure degenerate cases don't fail"
+    """Make sure degenerate cases don't fail."""
+
     res = sparklines([])
     exp = [""]
     # Produces an empty line from the command line

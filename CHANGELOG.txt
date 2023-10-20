@@ -34,3 +34,4 @@
 ?: Next release:
 
 - drop Python 2 support
+- replace Travis build with GitHub build action

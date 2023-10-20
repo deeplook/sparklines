@@ -89,12 +89,9 @@ command-line tool with the same name.
 Test
 ----
 
-To run the (still very small) "test suite", download and unpack this repository
-or clone it, and run the command ``python setup.py test`` in the unpacked
-archive. This will use a minified version of the ``pytest`` package included
-in this package in the file ``test/runtests.py``. If you have the excellent
-``pytest`` package installed you can also run ``py.test test`` from the 
-downloaded repository's root folder.
+To run the test suite, download and unpack this repository or clone it,
+run `pip inastall pytest`, and run the command ``pytest tests`` in the
+unpacked archive. from the downloaded repository's root folder.
 
 
 Usage

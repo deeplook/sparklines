@@ -15,42 +15,41 @@ class PyTest(distutils.core.Command):
     def run(self):
         import subprocess
         import sys
-        errno = subprocess.call([sys.executable, 'test/runtests.py'])
+
+        errno = subprocess.call([sys.executable, "test/runtests.py"])
         raise SystemExit(errno)
 
 
 setuptools.setup(
-    name='sparklines',
-    version='0.4.2',
-    author='Dinu Gherman',
-    author_email='gherman@darwin.in-berlin.de',
-    description='Generate sparklines for numbers using Unicode characters only.',
-    license='GPL',
-    keywords='visualization, chart, tool',
-    url='https://github.com/deeplook/sparklines',
-    packages=setuptools.find_packages(exclude='test'),
-    long_description=io.open('README.rst', encoding='utf-8').read(),
+    name="sparklines",
+    version="0.4.2",
+    author="Dinu Gherman",
+    author_email="gherman@darwin.in-berlin.de",
+    description="Generate sparklines for numbers using Unicode characters only.",
+    license="GPL",
+    keywords="visualization, chart, tool",
+    url="https://github.com/deeplook/sparklines",
+    packages=setuptools.find_packages(exclude="test"),
+    long_description=io.open("README.rst", encoding="utf-8").read(),
     install_requires=[
         # 'termcolor',
-        'future',
+        "future",
     ],
-    entry_points={
-        'console_scripts': ['sparklines=sparklines.__main__:main']
-    },
+    entry_points={"console_scripts": ["sparklines=sparklines.__main__:main"]},
     classifiers=[
         "Development Status :: 4 - Beta",
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'Intended Audience :: End Users/Desktop',
-        'Intended Audience :: Other Audience',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        'License :: OSI Approved :: GNU General Public License (GPL)'
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Other Audience",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
     ],
-    cmdclass={'test': PyTest},
+    cmdclass={"test": PyTest},
     package_data={
         # 'sparklines': ['foo.csv'],
     },

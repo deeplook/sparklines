@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+import sys
+import base64
+import zlib
+
 # Hi There!
 # You may be wondering what this giant blob of binary data here is, you might
 # even be worried that we're up to something nefarious (good for you for being
@@ -3428,10 +3432,6 @@ VCzAx/5mNSfO4TFJ6X0mkTwJ3jlKThnv5T5TtqdXYxRM4YdmLt4UVwTlsVuZR/FjUtQUYo4kIYu2
 GQbyy//cDf8PVf/G1w==
 """
 
-import sys
-import base64
-import zlib
-
 
 class DictImporter:
     def __init__(self, sources):
@@ -3444,21 +3444,22 @@ class DictImporter:
             return None
         if fullname in self.sources:
             return self
-        if fullname + '.__init__' in self.sources:
+        if fullname + ".__init__" in self.sources:
             return self
         return None
 
     def load_module(self, fullname):
         # print "load_module:",  fullname
         from types import ModuleType
+
         try:
             s = self.sources[fullname]
             is_pkg = False
         except KeyError:
-            s = self.sources[fullname + '.__init__']
+            s = self.sources[fullname + ".__init__"]
             is_pkg = True
 
-        co = compile(s, fullname, 'exec')
+        co = compile(s, fullname, "exec")
         module = sys.modules.setdefault(fullname, ModuleType(fullname))
         module.__file__ = "{0!s}/{1!s}".format(__file__, fullname)
         module.__loader__ = self
@@ -3471,8 +3472,9 @@ class DictImporter:
     def get_source(self, name):
         res = self.sources.get(name)
         if res is None:
-            res = self.sources.get(name + '.__init__')
+            res = self.sources.get(name + ".__init__")
         return res
+
 
 if __name__ == "__main__":
     try:
@@ -3483,10 +3485,12 @@ if __name__ == "__main__":
     if sys.version_info >= (3, 0):
         exec("def do_exec(co, loc): exec(co, loc)\n")
         import pickle
+
         sources = sources.encode("ascii")  # ensure bytes
         sources = pickle.loads(zlib.decompress(base64.decodebytes(sources)))
     else:
         import cPickle as pickle
+
         exec("def do_exec(co, loc): exec co in loc\n")
         sources = pickle.loads(zlib.decompress(base64.decodestring(sources)))
 

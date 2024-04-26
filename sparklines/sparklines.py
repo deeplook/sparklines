@@ -35,7 +35,7 @@ def _check_negatives(numbers):
 def _check_emphasis(numbers, emph):
     """Find index postions in list of numbers to be emphasized according to emph."""
 
-    pat = "(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
+    pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
     # find values to be highlighted
     emphasized = {}  # index: color
     for (i, n) in enumerate(numbers):

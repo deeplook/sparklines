@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name="sparklines",
-    version="0.4.2",
+    version="0.5.0",
     author="Dinu Gherman",
     author_email="gherman@darwin.in-berlin.de",
     description="Generate sparklines for numbers using Unicode characters only.",

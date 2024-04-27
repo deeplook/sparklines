@@ -1,8 +1,8 @@
 Sparklines
 ==========
 
-.. image:: http://img.shields.io/travis/deeplook/sparklines.svg
-  :target: https://travis-ci.org/deeplook/sparklines
+.. image:: https://img.shields.io/github/actions/workflow/status/deeplook/sparklines/python-package.yml
+  :target: https://pypi.org/project/sparklines
 
 .. image:: https://img.shields.io/pypi/pyversions/sparklines.svg
   :target: https://pypi.org/project/sparklines

@@ -52,7 +52,7 @@ def test_valid_number(arg):
 def test_valid_emphasis(arg):
     """Argparse validator for color filter expressions."""
 
-    pat = "\w+\:(eq|gt|ge|lt|le)\:.+"
+    pat = r"\w+\:(eq|gt|ge|lt|le)\:.+"
     if re.match(pat, arg):
         return arg
     else:

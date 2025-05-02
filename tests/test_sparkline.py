@@ -7,11 +7,12 @@ Run from the root folder with either 'python setup.py test' or
 
 import os
 import re
+from pathlib import Path
 
 import pytest
 
 from sparklines import batch, scale_values, sparklines, demo
-from sparklines.__main__ import test_valid_number as is_valid_number
+from sparklines.__main__ import test_valid_number as is_valid_number, main
 
 
 def strip_ansi(text):
@@ -227,3 +228,17 @@ def test_demo_consistency():
             stream.write(res.encode("utf8"))
 
     assert exp == res, "Demo output has changed. Verify it and update demo-output!"
+
+
+def test_main_version(capsys):
+    setup_py = Path(__file__).parent.parent / "setup.py"
+    match = re.search('version="(.+)"', setup_py.read_text())
+    assert match
+    expected_version = match.group(1)
+
+    with pytest.raises(SystemExit) as excinfo:
+        main(("--version",))
+    assert excinfo.value.code == 0
+
+    out, _ = capsys.readouterr()
+    assert out == f"{expected_version}\n"

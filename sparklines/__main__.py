@@ -8,6 +8,7 @@ import argparse
 import importlib.util
 import re
 import sys
+from importlib.metadata import version
 
 if importlib.util.find_spec("termcolor"):
     HAVE_TERMCOLOR = True
@@ -59,7 +60,7 @@ def test_valid_emphasis(arg):
         raise ValueError()
 
 
-def main():
+def main(argv=None):
     desc = """Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
         3 1 4 1 5 9 2 6. Please add bug reports and suggestions to
         https://github.com/deeplook/sparklines/issues."""
@@ -73,7 +74,11 @@ def main():
     )
 
     p.add_argument(
-        "-V", "--version", action="store_true", help="Display version number and quit."
+        "-V",
+        "--version",
+        action="version",
+        help="Display version number and quit.",
+        version=version("sparklines"),
     )
 
     help_d = """Show a few usage examples for given (mandatory) input
@@ -130,11 +135,7 @@ def main():
     """
     p.add_argument("-w", "--wrap", metavar="PERIOD", type=int, help=help_wrap)
 
-    a = args = p.parse_args()
-
-    if args.version:
-        print("0.4.2")  # FIXME: needs to be taken again from setup.py...
-        sys.exit()
+    a = args = p.parse_args(argv)
 
     numbers = args.nums
     if numbers == sys.stdin:

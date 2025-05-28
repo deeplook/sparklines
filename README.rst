@@ -44,11 +44,6 @@ would work only with a dedicated font, which is way beyond the scope of this
 tool and which would significantly complicate its usage. So we stick to these
 characters: "▁▂▃▄▅▆▇█", and use a blank for missing values.
 
-This code was tested ok at some point for Python 2.6 and 2.7, but no longer
-supports Python 2 after it reached end-of-life. Now Python 3.5 to 3.8 as well
-as PyPy 3 are all tested via Travis-CI.
-
-
 Sample output
 -------------
 

@@ -76,19 +76,43 @@ Examples for the code below:
 Installation
 ------------
 
-You can install this package using ``pip install sparklines`` from the `Python
-Package Index`_.
-You can also clone this repository and install it via ``python setup.py install``
-or ``pip install -e .``.
-After installing, you will have access system-wide (or in your virtualenv
-if you have used that) to ``sparklines``, programmatically as well as via a
-command-line tool with the same name.
+**From PyPI (Recommended)**
+
+You can install this package from the `Python Package Index`_ using pip:
+
+.. code-block:: bash
+
+    pip install sparklines
+
+**From Source**
+
+To install from source, clone this repository and install it:
+
+.. code-block:: bash
+
+    git clone https://github.com/deeplook/sparklines.git
+    cd sparklines
+    pip install .
+
+**Development Installation**
+
+For development work, install in editable mode with development dependencies:
+
+.. code-block:: bash
+
+    git clone https://github.com/deeplook/sparklines.git
+    cd sparklines
+    pip install -e ".[dev]"
+
+After installing, you will have access system-wide (or in your virtual environment
+if you have used one) to the ``sparklines`` command-line tool, as well as the Python
+module for programmatic use.
 
 Test
 ----
 
 To run the test suite, download and unpack this repository or clone it,
-run `pip inastall pytest`, and run the command ``pytest tests`` in the
+run `pip install pytest`, and run the command ``pytest tests`` in the
 unpacked archive. from the downloaded repository's root folder.
 
 

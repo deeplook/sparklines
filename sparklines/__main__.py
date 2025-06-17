@@ -97,9 +97,7 @@ def main(argv=None):
         threshold (e.g. "green:gt:5.0"). This option takes one argument
         value, but can be given repeatedly. Works only when optional
         dependancy "termcolor" is met (which is {0!s} here). Otherwise
-        has no effect.""".format(
-        HAVE_TERMCOLOR
-    )
+        has no effect.""".format(HAVE_TERMCOLOR)
     p.add_argument(
         "-e",
         "--emphasize",

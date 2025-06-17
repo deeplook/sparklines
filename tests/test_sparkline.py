@@ -8,6 +8,11 @@ Run from the root folder with either 'python setup.py test' or
 import os
 import re
 from pathlib import Path
+import sys
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 import pytest
 
@@ -231,10 +236,10 @@ def test_demo_consistency():
 
 
 def test_main_version(capsys):
-    setup_py = Path(__file__).parent.parent / "setup.py"
-    match = re.search('version="(.+)"', setup_py.read_text())
-    assert match
-    expected_version = match.group(1)
+    pyproject_toml = Path(__file__).parent.parent / "pyproject.toml"
+    with open(pyproject_toml, "rb") as f:
+        project_data = tomllib.load(f)
+    expected_version = project_data["project"]["version"]
 
     with pytest.raises(SystemExit) as excinfo:
         main(("--version",))

@@ -37,3 +37,9 @@
 - replaced Travis build with GitHub build action
 - removed minified pytest code
 - added a fix regarding regex for Python 3.12
+
+0.5.1: Seventh release:
+
+- move from setup.py and setup.cfg to pyproject.toml
+- add workflow for test releases
+- version updates in workflow files

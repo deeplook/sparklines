@@ -38,7 +38,7 @@ def _check_emphasis(numbers, emph):
     pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
     # find values to be highlighted
     emphasized = {}  # index: color
-    for (i, n) in enumerate(numbers):
+    for i, n in enumerate(numbers):
         if n is None:
             continue
         for em in emph:
@@ -217,8 +217,9 @@ def demo(nums=None):
     result.append("- Multi-line sparkline (n=2)")
     result.append("{0!s} -n 2 {1!s}".format(prog, " ".join(nums1)))
     result.append(
-        ">>> for line in sparklines"
-        "([{0!s}], num_lines=2): print(line)".format(", ".join(nums1))
+        ">>> for line in sparklines([{0!s}], num_lines=2): print(line)".format(
+            ", ".join(nums1)
+        )
     )
     for line in sparklines(nums, num_lines=2):
         result.append(line)
@@ -227,8 +228,9 @@ def demo(nums=None):
     result.append("- Multi-line sparkline (n=3)")
     result.append("{0!s} -n 3 {1!s}".format(prog, " ".join(nums1)))
     result.append(
-        ">>> for line in sparklines"
-        "([{0!s}], num_lines=3): print(line)".format(", ".join(nums1))
+        ">>> for line in sparklines([{0!s}], num_lines=3): print(line)".format(
+            ", ".join(nums1)
+        )
     )
     for line in sparklines(nums, num_lines=3):
         result.append(line)

@@ -29,7 +29,6 @@ def strip_ansi(text):
 
 def test_parse_float():
     """Test parsing input numbers."""
-
     t = is_valid_number
 
     assert t("4.5") == "4.5"
@@ -61,7 +60,6 @@ def test_parse_float():
 
 def test_scale0():
     """Test scale..."""
-
     res = scale_values([1, 2, 3])
     exp = [1.0, 4.0, 8.0]
     assert res == exp
@@ -69,7 +67,6 @@ def test_scale0():
 
 def test_scale1():
     """Test scale..."""
-
     res = scale_values([1, 2, 3], num_lines=2)
     exp = [1.0, 8.0, 16.0]
     assert res == exp
@@ -85,7 +82,6 @@ def test_batch():
 
 def test_scale_pi():
     """Test scale Pi."""
-
     res = scale_values([3, 1, 4, 1, 5, 9, 2, 6])
     exp = [3, 1, 4, 1, 4, 8, 2, 5]
     assert res == exp
@@ -93,7 +89,6 @@ def test_scale_pi():
 
 def test_pi():
     """Test first eight digits of Pi."""
-
     res = sparklines([3, 1, 4, 1, 5, 9, 2, 6])
     exp = ["▃▁▄▁▄█▂▅"]
     assert res == exp
@@ -101,7 +96,6 @@ def test_pi():
 
 def test_minmax():
     """Test two values, min and max."""
-
     res = sparklines([1, 8])
     exp = ["▁█"]  # 1, 8
     assert res == exp
@@ -109,7 +103,6 @@ def test_minmax():
 
 def test_rounding0():
     """Test two values, min and max."""
-
     res = sparklines([1, 5, 8])
     exp = ["▁▅█"]  # 1, 5, 8
     assert res == exp
@@ -141,7 +134,6 @@ def test_minimum_internal_consistency():
 
 def test1():
     """Test single values all have the same four pixel high output character."""
-
     for i in range(10):
         res = sparklines([i])
         exp = ["▄"]
@@ -150,7 +142,6 @@ def test1():
 
 def test_empty():
     """Make sure degenerate cases don't fail."""
-
     res = sparklines([])
     exp = [""]
     # Produces an empty line from the command line

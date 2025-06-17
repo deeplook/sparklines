@@ -10,20 +10,16 @@ import re
 import sys
 from importlib.metadata import version
 
-if importlib.util.find_spec("termcolor"):
-    HAVE_TERMCOLOR = True
-else:
-    HAVE_TERMCOLOR = False
-
 if sys.version_info.major >= 3:
     from sparklines.sparklines import sparklines, demo
 else:
     from sparklines import sparklines, demo
 
+HAVE_TERMCOLOR = bool(importlib.util.find_spec("termcolor"))
+
 
 def _float_or_none(num_str):
     """Convert a string to a float if possible or None."""
-
     try:
         res = float(num_str)
     except ValueError:
@@ -52,15 +48,15 @@ def test_valid_number(arg):
 
 def test_valid_emphasis(arg):
     """Argparse validator for color filter expressions."""
-
     pat = r"\w+\:(eq|gt|ge|lt|le)\:.+"
     if re.match(pat, arg):
         return arg
-    else:
-        raise ValueError()
+
+    raise ValueError()
 
 
 def main(argv=None):
+    """Main entry point for the CLI."""
     desc = """Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
         3 1 4 1 5 9 2 6. Please add bug reports and suggestions to
         https://github.com/deeplook/sparklines/issues."""
@@ -93,11 +89,11 @@ def main(argv=None):
         "-M", "--max", type=float, help="Use this value as the maximum for scaling."
     )
 
-    help_emph = """Emphasize input values below or above a certain
+    help_emph = f"""Emphasize input values below or above a certain
         threshold (e.g. "green:gt:5.0"). This option takes one argument
         value, but can be given repeatedly. Works only when optional
-        dependancy "termcolor" is met (which is {0!s} here). Otherwise
-        has no effect.""".format(HAVE_TERMCOLOR)
+        dependancy "termcolor" is met (which is {HAVE_TERMCOLOR} here). Otherwise
+        has no effect."""
     p.add_argument(
         "-e",
         "--emphasize",

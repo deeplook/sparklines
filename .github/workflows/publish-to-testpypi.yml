@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distribution 📦 to Test PyPI
+name: Publish distribution to Test PyPI
 
 on:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
     - name: Build distribution packages
       run: python -m build
     
-    - name: Publish distribution 📦 to Test PyPI
+    - name: Publish distribution to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/

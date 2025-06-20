@@ -48,3 +48,6 @@ Documentation = "https://github.com/deeplook/sparklines"
 
 [project.scripts]
 sparklines = "sparklines.__main__:main"
+
+[tool.ruff]
+target-version = "py38"

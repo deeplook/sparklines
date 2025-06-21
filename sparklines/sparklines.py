@@ -66,7 +66,7 @@ def scale_values(
     num_lines: int = 1,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
-) -> list[int | None]:
+) -> list[Optional[int]]:
     """Scale input numbers to appropriate range."""
 
     # find min/max values, ignoring Nones
@@ -105,7 +105,7 @@ def sparklines(
     verbose: bool = False,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
-    wrap: int | None = None,
+    wrap: Optional[int] = None,
 ) -> list[str]:
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
@@ -205,7 +205,7 @@ def demo(nums: Optional[list[Optional[float]]] = None) -> str:
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
 
-    def fmt(num: float | int | None) -> str:
+    def fmt(num: float | Optional[int]) -> str:
         return "{0:g}".format(num) if isinstance(num, (float, int)) else "None"
 
     nums1 = list(map(fmt, nums))

@@ -1,7 +1,7 @@
 Sparklines
 ==========
 
-.. image:: https://img.shields.io/github/actions/workflow/status/deeplook/sparklines/python-package.yml
+.. image:: https://img.shields.io/github/actions/workflow/status/deeplook/sparklines/lint-test.yml
   :target: https://pypi.org/project/sparklines
 
 .. image:: https://img.shields.io/pypi/pyversions/sparklines.svg

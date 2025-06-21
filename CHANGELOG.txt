@@ -38,8 +38,10 @@
 - removed minified pytest code
 - added a fix regarding regex for Python 3.12
 
-0.5.1: Seventh release:
+0.6.0: Seventh release:
 
 - move from setup.py and setup.cfg to pyproject.toml
-- add workflow for test releases
-- version updates in workflow files
+- add workflow for test releases on test.pypi.org
+- various updates in github workflow files
+- add type annotations
+- drop support for Python 3.8

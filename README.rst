@@ -108,12 +108,13 @@ After installing, you will have access system-wide (or in your virtual environme
 if you have used one) to the ``sparklines`` command-line tool, as well as the Python
 module for programmatic use.
 
+
 Test
 ----
 
 To run the test suite, download and unpack this repository or clone it,
-run `pip install pytest`, and run the command ``pytest tests`` in the
-unpacked archive. from the downloaded repository's root folder.
+and run the command ``pytest tests`` in the unpacked archive in the downloaded
+repository root folder.
 
 
 Usage
@@ -188,8 +189,7 @@ extra features I was missing, like:
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
 - issuing warnings for negative values (allowed, but misleading)
-- highlighting values exceeding some threshold with a different
-  color (if ``termcolor`` package is available)
+- highlighting values exceeding some threshold with a different color
 - wrapping long sparklines at some max. length
 - (todo) adding separator characters like ``:`` at regular intervals
 

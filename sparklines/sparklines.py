@@ -9,6 +9,7 @@ Please read the file README.rst for more information.
 import re
 import sys
 import warnings
+from typing import Any, Optional, Sequence
 
 try:
     import termcolor
@@ -21,7 +22,7 @@ except ImportError:
 blocks = " ▁▂▃▄▅▆▇█"
 
 
-def _check_negatives(numbers):
+def _check_negatives(numbers: list[float | None]) -> None:
     """Raise warning for negative numbers."""
 
     negatives = filter(lambda x: x < 0, filter(None, numbers))
@@ -32,7 +33,7 @@ def _check_negatives(numbers):
         warnings.warn(msg)
 
 
-def _check_emphasis(numbers, emph):
+def _check_emphasis(numbers: list[float | None], emph: list[str]) -> dict[int, str]:
     """Find index postions in list of numbers to be emphasized according to emph."""
 
     pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
@@ -42,7 +43,10 @@ def _check_emphasis(numbers, emph):
         if n is None:
             continue
         for em in emph:
-            color, op, value = re.match(pat, em).groups()
+            match = re.match(pat, em)
+            if match is None:
+                continue
+            color, op, value = match.groups()
             value = float(value)
             if op == "eq" and n == value:
                 emphasized[i] = color
@@ -57,7 +61,12 @@ def _check_emphasis(numbers, emph):
     return emphasized
 
 
-def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
+def scale_values(
+    numbers: list[float | None],
+    num_lines: int = 1,
+    minimum: float | None = None,
+    maximum: float | None = None,
+) -> list[int | None]:
     """Scale input numbers to appropriate range."""
 
     # find min/max values, ignoring Nones
@@ -77,26 +86,27 @@ def scale_values(numbers, num_lines=1, minimum=None, maximum=None):
         min_index = 1.0
         max_index = num_lines * num_blocks
 
-        values = [
-            ((max_index - min_index) * (x - min_)) / dv + min_index
-            if x is not None
-            else None
+        values_f = [
+            (
+                ((max_index - min_index) * (x - min_)) / dv + min_index
+                if x is not None
+                else None
+            )
             for x in numbers
         ]
-
-        values = [round(v) or 1 if v is not None else None for v in values]
+        values = [round(v) or 1 if v is not None else None for v in values_f]
     return values
 
 
 def sparklines(
-    numbers=None,
-    num_lines=1,
-    emph=None,
-    verbose=False,
-    minimum=None,
-    maximum=None,
-    wrap=None,
-):
+    numbers: Optional[list[float | None]] = None,
+    num_lines: int = 1,
+    emph: Optional[list[str]] = None,
+    verbose: bool = False,
+    minimum: float | None = None,
+    maximum: float | None = None,
+    wrap: int | None = None,
+) -> list[str]:
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
@@ -148,9 +158,11 @@ def sparklines(
             if HAVE_TERMCOLOR and emphasized:
                 tc = termcolor.colored
                 res = [
-                    tc(blocks[int(v)], emphasized.get(point_index + i, "white"))
-                    if v is not None
-                    else " "
+                    (
+                        tc(blocks[int(v)], emphasized.get(point_index + i, "white"))
+                        if v is not None
+                        else " "
+                    )
                     for (i, v) in enumerate(subgraph_values)
                 ]
             else:
@@ -164,7 +176,7 @@ def sparklines(
     return list_join("", subgraphs)
 
 
-def batch(batch_size, items):
+def batch(batch_size: Optional[int], items: Sequence[Any]) -> list[list[Any]]:
     """Batch items into groups of batch_size."""
     items = list(items)
     if batch_size is None:
@@ -175,7 +187,7 @@ def batch(batch_size, items):
     return [[item for item in group if item != MISSING] for group in groups]
 
 
-def list_join(separator, lists):
+def list_join(separator: str, lists: list[list[Any]]) -> list[Any]:
     result = []
     for lst, _next in zip(lists[:], lists[1:]):
         result.extend(lst)
@@ -186,14 +198,14 @@ def list_join(separator, lists):
     return result
 
 
-def demo(nums=None):
+def demo(nums: Optional[list[float | None]] = None) -> str:
     """Print a few usage examples on stdout."""
     if nums is None:
         nums = []
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
 
-    def fmt(num):
+    def fmt(num: float | int | None) -> str:
         return "{0:g}".format(num) if isinstance(num, (float, int)) else "None"
 
     nums1 = list(map(fmt, nums))

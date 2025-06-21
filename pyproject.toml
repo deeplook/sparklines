@@ -14,7 +14,9 @@ keywords = ["visualization", "chart", "tool"]
 authors = [
     {name = "Dinu Gherman", email = "gherman@darwin.in-berlin.de"}
 ]
-dependencies = []
+dependencies = [
+    "termcolor>=2.4.0",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",

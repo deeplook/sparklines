@@ -9,6 +9,7 @@ import importlib.util
 import re
 import sys
 from importlib.metadata import version
+from typing import Optional
 
 if sys.version_info.major >= 3:
     from sparklines.sparklines import sparklines, demo
@@ -18,7 +19,7 @@ else:
 HAVE_TERMCOLOR = bool(importlib.util.find_spec("termcolor"))
 
 
-def _float_or_none(num_str):
+def _float_or_none(num_str: str) -> Optional[float]:
     """Convert a string to a float if possible or None."""
     try:
         res = float(num_str)
@@ -27,7 +28,7 @@ def _float_or_none(num_str):
     return res
 
 
-def test_valid_number(arg):
+def test_valid_number(arg: str) -> str:
     """Argparse validator for input numbers, basically floats or null/none."""
     # https://stackoverflow.com/questions/385558/extract-float-double-value
 
@@ -46,7 +47,7 @@ def test_valid_number(arg):
     raise ValueError()
 
 
-def test_valid_emphasis(arg):
+def test_valid_emphasis(arg: str) -> str:
     """Argparse validator for color filter expressions."""
     pat = r"\w+\:(eq|gt|ge|lt|le)\:.+"
     if re.match(pat, arg):
@@ -55,7 +56,7 @@ def test_valid_emphasis(arg):
     raise ValueError()
 
 
-def main(argv=None):
+def main(argv: Optional[list[str]] = None) -> None:
     """Main entry point for the CLI."""
     desc = """Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
         3 1 4 1 5 9 2 6. Please add bug reports and suggestions to

@@ -9,7 +9,7 @@ Please read the file README.rst for more information.
 import re
 import sys
 import warnings
-from typing import Any, Optional, Sequence
+from typing import Any, Optional, Sequence, Union
 
 try:
     import termcolor
@@ -205,7 +205,7 @@ def demo(nums: Optional[list[Optional[float]]] = None) -> str:
 
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
 
-    def fmt(num: float | Optional[int]) -> str:
+    def fmt(num: Union[float, int, None]) -> str:
         return "{0:g}".format(num) if isinstance(num, (float, int)) else "None"
 
     nums1 = list(map(fmt, nums))

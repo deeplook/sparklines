@@ -22,7 +22,7 @@ except ImportError:
 blocks = " ▁▂▃▄▅▆▇█"
 
 
-def _check_negatives(numbers: list[float | None]) -> None:
+def _check_negatives(numbers: list[Optional[float]]) -> None:
     """Raise warning for negative numbers."""
 
     negatives = filter(lambda x: x < 0, filter(None, numbers))
@@ -33,7 +33,7 @@ def _check_negatives(numbers: list[float | None]) -> None:
         warnings.warn(msg)
 
 
-def _check_emphasis(numbers: list[float | None], emph: list[str]) -> dict[int, str]:
+def _check_emphasis(numbers: list[Optional[float]], emph: list[str]) -> dict[int, str]:
     """Find index postions in list of numbers to be emphasized according to emph."""
 
     pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
@@ -62,10 +62,10 @@ def _check_emphasis(numbers: list[float | None], emph: list[str]) -> dict[int, s
 
 
 def scale_values(
-    numbers: list[float | None],
+    numbers: list[Optional[float]],
     num_lines: int = 1,
-    minimum: float | None = None,
-    maximum: float | None = None,
+    minimum: Optional[float] = None,
+    maximum: Optional[float] = None,
 ) -> list[int | None]:
     """Scale input numbers to appropriate range."""
 
@@ -99,12 +99,12 @@ def scale_values(
 
 
 def sparklines(
-    numbers: Optional[list[float | None]] = None,
+    numbers: Optional[list[Optional[float]]] = None,
     num_lines: int = 1,
     emph: Optional[list[str]] = None,
     verbose: bool = False,
-    minimum: float | None = None,
-    maximum: float | None = None,
+    minimum: Optional[float] = None,
+    maximum: Optional[float] = None,
     wrap: int | None = None,
 ) -> list[str]:
     """
@@ -198,7 +198,7 @@ def list_join(separator: str, lists: list[list[Any]]) -> list[Any]:
     return result
 
 
-def demo(nums: Optional[list[float | None]] = None) -> str:
+def demo(nums: Optional[list[Optional[float]]] = None) -> str:
     """Print a few usage examples on stdout."""
     if nums is None:
         nums = []

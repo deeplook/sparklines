@@ -45,3 +45,7 @@
 - various updates in github workflow files
 - add type annotations
 - drop support for Python 3.8
+
+0.7.0: Eighth release:
+
+- Changed license from GPL to MIT starting with version 0.7.0

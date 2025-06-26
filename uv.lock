@@ -79,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "sparklines"
-version = "0.5.1"
+version = "0.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "termcolor" },

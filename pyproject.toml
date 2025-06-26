@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sparklines"
-version = "0.6.0"
+version = "0.7.0"
 description = "Generate sparklines for numbers using Unicode characters only."
 readme = "README.rst"
 requires-python = ">=3.9"
-license = "GPL-3.0-or-later"
+license = "MIT"
 license-files = ["LICENSE.txt"]
 keywords = ["visualization", "chart", "tool"]
 authors = [
@@ -30,7 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "License :: OSI Approved :: MIT License",
 ]
 
 [project.optional-dependencies]

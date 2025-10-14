@@ -21,7 +21,11 @@ Sparklines
 
 .. image:: https://img.shields.io/pypi/l/sparklines.svg
   :target: https://pypi.org/project/sparklines
-  
+
+.. image:: https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black
+  :target: https://www.buymeacoffee.com/deeplook
+     :alt: Buy Me a Coffee
+
 This Python package implements Edward Tufte's concept of sparklines_, but
 limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this I likely not displayed
 correctly in every browser). You can find more information about sparklines

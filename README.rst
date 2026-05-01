@@ -88,6 +88,29 @@ You can install this package from the `Python Package Index`_ using pip:
 
     pip install sparklines
 
+**On macOS with Homebrew**
+
+If you prefer Homebrew on macOS, tap the formula and install it with:
+
+.. code-block:: bash
+
+    brew tap deeplook/sparklines
+    brew install sparklines
+
+**With uv**
+
+If you use `uv`_, you can run sparklines without a permanent install:
+
+.. code-block:: bash
+
+    uvx sparklines 2 7 1 8 2 8 1 8
+
+Or install it into your `uv` tool environment:
+
+.. code-block:: bash
+
+    uv tool install sparklines
+
 **From Source**
 
 To install from source, clone this repository and install it:
@@ -199,5 +222,6 @@ extra features I was missing, like:
 
 .. _Asciinema: https://asciinema.org
 .. _Python Package Index: https://pypi.python.org/pypi/sparklines/
+.. _uv: https://docs.astral.sh/uv/
 .. _sparklines: http://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR
 .. _on Wikipedia: https://en.wikipedia.org/wiki/Sparkline

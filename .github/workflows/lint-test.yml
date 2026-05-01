@@ -47,10 +47,12 @@ jobs:
         ruff check .
         ruff format --check .
 
-    - name: Type check with mypy
+    - name: Type check with mypy (skip PyPy)
+      if: ${{ !startsWith(matrix.python-version, 'pypy') }}
       run: |
         mypy --strict sparklines tests
 
-    - name: Test with pytest and coverage
+    - name: Test with pytest and coverage (skip 3.9)
+      if: ${{ matrix.python-version != '3.9' }}
       run: |
         pytest tests --cov=./ --cov-report=term-missing

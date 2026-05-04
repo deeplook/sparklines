@@ -27,7 +27,7 @@ Sparklines
      :alt: Buy Me a Coffee
 
 This Python package implements Edward Tufte's concept of sparklines_, but
-limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this I likely not displayed
+limited to text only e.g. like this: ▃▁▄▁▅█▂▅ (this might not be displayed
 correctly in every browser). You can find more information about sparklines
 `on Wikipedia`_. This code was mainly developed for running simple
 plausibility tests in sensor networks as shown in fig. 1 below:
@@ -193,7 +193,7 @@ this README. The main function to use programmatically is
     ▁▃▅▆█ ▅▃▁
 
     In [3]: for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1], num_lines=2):
-        print(line)
+       ...:     print(line)
        ...:     
       ▁▅█ ▁  
     ▁▅███ █▅▁

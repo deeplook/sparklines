@@ -222,9 +222,11 @@ def test_inverted_basic() -> None:
 def test_inverted_full_and_empty() -> None:
     res = sparklines([9, 0, 9], inverted=True)
     stripped = strip_ansi(res[0])
-    # Max value → full block; zero-equivalent → space
+    # Max value (9) → full block
     assert stripped[0] == "█"
     assert stripped[2] == "█"
+    # Input 0 is not None, so scale_values maps it to min_index=1 — a tiny bar, not a space
+    assert stripped[1] != " "
 
 
 def test_inverted_gaps() -> None:
@@ -266,6 +268,15 @@ def test_inverted_with_emph() -> None:
     assert len(res) == 1
     # ANSI codes present (both color and reverse video)
     assert "\x1b[" in res[0]
+
+
+def test_inverted_with_explicit_range() -> None:
+    res = sparklines([1, 100], inverted=True, minimum=0, maximum=100)
+    stripped = strip_ansi(res[0])
+    # Small value relative to large maximum → tiny bar, not a space
+    assert stripped[0] != " "
+    # Maximum → full block
+    assert stripped[1] == "█"
 
 
 def test_inverted_negative_warning() -> None:

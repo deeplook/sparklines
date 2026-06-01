@@ -45,7 +45,7 @@ def _ansi_ok() -> bool:
 def _check_negatives(numbers: list[Optional[float]], inverted: bool = False) -> None:
     """Raise warning for negative numbers."""
 
-    negatives = list(filter(lambda x: x < 0, filter(None, numbers)))
+    negatives = list(filter(lambda x: x < 0, filter(lambda x: x is not None, numbers)))
     if any(negatives):
         neg_values = ", ".join(map(str, negatives))
         suffix = (

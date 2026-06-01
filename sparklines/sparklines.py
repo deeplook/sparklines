@@ -53,7 +53,7 @@ def _check_negatives(numbers: list[Optional[float]], inverted: bool = False) -> 
             if inverted
             else "While not forbidden, the output will look unexpected."
         )
-        warnings.warn("Found negative value(s): {0!s}. {1}".format(neg_values, suffix))
+        warnings.warn(f"Found negative value(s): {neg_values!s}. {suffix}")
 
 
 def _inverted_char(v: int, color: Optional[str] = None) -> str:
@@ -77,7 +77,7 @@ def _inverted_char(v: int, color: Optional[str] = None) -> str:
     ch = blocks[_COMPLEMENT[v]]
     if HAVE_TERMCOLOR:
         return termcolor.colored(ch, color, attrs=["reverse"], force_color=True)
-    return "\033[7m{0}\033[27m".format(ch)
+    return f"\033[7m{ch}\033[27m"
 
 
 def _check_emphasis(numbers: list[Optional[float]], emph: list[str]) -> dict[int, str]:

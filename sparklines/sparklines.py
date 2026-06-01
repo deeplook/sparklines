@@ -215,7 +215,9 @@ def sparklines(
                     (
                         _inverted_char(
                             v,
-                            emphasized.get(point_index + i) if HAVE_TERMCOLOR and emphasized else None,
+                            emphasized.get(point_index + i)
+                            if HAVE_TERMCOLOR and emphasized
+                            else None,
                         )
                         if v is not None
                         else " "

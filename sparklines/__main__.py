@@ -134,7 +134,9 @@ def main(argv: Optional[list[str]] = None) -> None:
         reverse video. Gives full 8-level resolution for downward bars. Pass
         positive (absolute) values; intended for negative datasets rendered
         below a zero line."""
-    p.add_argument("-i", "--inverted", action="store_true", default=False, help=help_inv)
+    p.add_argument(
+        "-i", "--inverted", action="store_true", default=False, help=help_inv
+    )
 
     a = args = p.parse_args(argv)
 

@@ -46,16 +46,14 @@ def _check_negatives(
     numbers: Sequence[Optional[float]], inverted: bool = False
 ) -> None:
     """Raise warning for negative numbers."""
-
+    if inverted:
+        return
     negatives: list[float] = [x for x in numbers if x is not None and x < 0]
     if any(negatives):
         neg_values = ", ".join(map(str, negatives))
-        suffix = (
-            "Pass absolute values when using inverted=True."
-            if inverted
-            else "While not forbidden, the output will look unexpected."
+        warnings.warn(
+            f"Found negative value(s): {neg_values!s}. While not forbidden, the output will look unexpected."
         )
-        warnings.warn(f"Found negative value(s): {neg_values!s}. {suffix}")
 
 
 def _inverted_char(v: int, color: Optional[str] = None) -> str:
@@ -70,7 +68,7 @@ def _inverted_char(v: int, color: Optional[str] = None) -> str:
         return " "
     if v == 8:
         if color and HAVE_TERMCOLOR and _ansi_ok():
-            return termcolor.colored("█", color, force_color=True)
+            return termcolor.colored("█", color, attrs=["reverse"], force_color=True)
         if _ansi_ok():
             return "\033[7m█\033[27m"
         return "█"
@@ -158,6 +156,7 @@ def sparklines(
     maximum: Optional[float] = None,
     wrap: Optional[int] = None,
     inverted: bool = False,
+    split: bool = False,
 ) -> list[str]:
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
@@ -189,8 +188,43 @@ def sparklines(
     if len(numbers) == 0:
         return [""]
 
+    if split:
+        pos: list[Optional[float]] = [
+            v if v is not None and v > 0 else None for v in numbers
+        ]
+        neg: list[Optional[float]] = [
+            abs(v) if v is not None and v < 0 else None for v in numbers
+        ]
+        pos_vals: list[float] = [v for v in pos if v is not None]
+        neg_vals: list[float] = [v for v in neg if v is not None]
+        shared_max: float = max(
+            max(pos_vals) if pos_vals else 0.0,
+            max(neg_vals) if neg_vals else 0.0,
+        )
+        pos_lines = sparklines(
+            pos,
+            num_lines=num_lines,
+            emph=emph,
+            minimum=0.0,
+            maximum=shared_max,
+            wrap=wrap,
+        )
+        neg_lines = sparklines(
+            neg,
+            num_lines=num_lines,
+            emph=emph,
+            minimum=0.0,
+            maximum=shared_max,
+            wrap=wrap,
+            inverted=True,
+        )
+        return pos_lines + neg_lines
+
     # raise warning for negative numbers
     _check_negatives(numbers, inverted=inverted)
+
+    if inverted:
+        numbers = [abs(v) if v is not None and v < 0 else v for v in numbers]
 
     values = scale_values(
         numbers, num_lines=num_lines, minimum=minimum, maximum=maximum
@@ -346,5 +380,18 @@ def demo(nums: Optional[list[Optional[float]]] = None) -> str:
         )
     )
     for line in sparklines(inv_nums, num_lines=2, inverted=True):
+        result.append(line)
+    result.append("")
+
+    split_nums = [3, -1, 4, -1, 5, -9, 2, -6]
+    split_nums1 = list(map(fmt, split_nums))
+    result.append("- Split sparkline (positive and negative values)")
+    result.append("{0!s} -s {1!s}".format(prog, " ".join(split_nums1)))
+    result.append(
+        ">>> for line in sparklines([{0!s}], split=True): print(line)".format(
+            ", ".join(split_nums1)
+        )
+    )
+    for line in sparklines(split_nums, split=True):
         result.append(line)
     return "\n".join(result) + "\n"

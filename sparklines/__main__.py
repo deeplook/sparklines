@@ -138,6 +138,11 @@ def main(argv: Optional[list[str]] = None) -> None:
         "-i", "--inverted", action="store_true", default=False, help=help_inv
     )
 
+    help_split = """Automatically split positive and negative values into
+        stacked rows: positive values as upward bars on top, negative values
+        as downward bars below, both scaled to a shared maximum."""
+    p.add_argument("-s", "--split", action="store_true", default=False, help=help_split)
+
     a = args = p.parse_args(argv)
 
     numbers = args.nums
@@ -158,6 +163,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         maximum=a.max,
         wrap=args.wrap,
         inverted=a.inverted,
+        split=a.split,
     ):
         print(line)
 

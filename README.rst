@@ -205,14 +205,34 @@ this README. The main function to use programmatically is
 Inverted sparklines
 ...................
 
-Passing ``inverted=True`` renders bars hanging **downward** from a top
-baseline. This uses ANSI reverse video combined with the complement block
-character to achieve the same 8-level resolution as upward bars. It is
-intended for rendering negative datasets below a zero line by stacking an
-upward sparkline above an inverted one.
+**Split mode (recommended for mixed datasets)**
 
-Pass absolute (positive) values to the inverted call; the caller is
-responsible for splitting and stacking:
+When your data contains both positive and negative values, pass ``split=True``
+for a two-row rendering: upward bars for positives on top, downward bars for
+negatives below, both scaled to a shared maximum:
+
+.. code-block:: python
+
+    In [1]: from sparklines import sparklines
+
+    In [2]: data = [50, 30, 80, -20, -60, -10, 40, 10]
+       ...: for line in sparklines(data, split=True):
+       ...:     print(line)
+       ...:
+    ▅▃█   █▁
+       ▀█▔
+
+From the command-line, use ``-s`` / ``--split``:
+
+.. code-block:: console
+
+    $ sparklines -s 3 -1 4 -1 5 -9 2 -6
+
+**Manual split (advanced)**
+
+For full control over scaling or stacking, you can split and scale manually.
+Negative values passed to ``inverted=True`` are automatically converted to
+their absolute values, so each half can be rendered independently:
 
 .. code-block:: python
 
@@ -260,6 +280,7 @@ extra features I was missing, like:
 
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
+- split mode (``split=True`` / ``-s``) for mixed positive/negative datasets with automatic two-row rendering
 - inverted sparklines for negative datasets (bars hang downward, full 8-level resolution via ANSI reverse video)
 - highlighting values exceeding some threshold with a different color
 - wrapping long sparklines at some max. length

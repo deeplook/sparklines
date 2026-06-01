@@ -58,3 +58,8 @@
   matching the resolution of upward bars. Falls back to top-fill Unicode
   characters (▔▀█) when NO_COLOR, ANSI_COLORS_DISABLED, or TERM=dumb is set.
 - Multi-line inverted sparklines (num_lines > 1) are fully supported.
+- Added split=True / -s/--split: automatic two-row rendering for mixed
+  datasets — positive values as upward bars on top, negative values as
+  downward bars below, both scaled to a shared maximum.
+- Negative values passed to inverted=True are now automatically converted to
+  absolute values (no warning; behavior is now well-defined).

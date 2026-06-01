@@ -268,6 +268,9 @@ def test_inverted_with_emph() -> None:
     assert len(res) == 1
     # ANSI codes present (both color and reverse video)
     assert "\x1b[" in res[0]
+    # Full-block emphasized bar (max value 9) must use reverse video, not just plain color
+    full_block_res = sparklines([9], inverted=True, emph=["red:ge:1"])
+    assert "\x1b[7m" in full_block_res[0]
 
 
 def test_inverted_with_explicit_range() -> None:
@@ -279,9 +282,13 @@ def test_inverted_with_explicit_range() -> None:
     assert stripped[1] == "█"
 
 
-def test_inverted_negative_warning() -> None:
-    with pytest.warns(UserWarning, match="negative"):
-        sparklines([-1, 2, 3], inverted=True)
+def test_inverted_negative_autoabs() -> None:
+    # Negatives are silently abs()'d; largest magnitude → full block
+    res = sparklines([-9, -1], inverted=True)
+    assert len(res) == 1
+    stripped = strip_ansi(res[0])
+    assert stripped[0] == "█"
+    assert stripped[1] != " "
 
 
 def test_inverted_no_color_fallback() -> None:
@@ -316,6 +323,58 @@ def test_demo_consistency() -> None:
         "Demo output has changed. Verify it and update demo-output!"
     )
     assert "\x1b[7m" in res, "Demo inverted output is missing ANSI reverse video codes"
+
+
+def test_split_basic() -> None:
+    res = sparklines([3, -1, 4, -2, 5], split=True)
+    assert len(res) == 2
+    top_stripped = strip_ansi(res[0])
+    bottom_stripped = strip_ansi(res[1])
+    # Negative positions → None in pos → spaces in top row
+    assert top_stripped[1] == " "
+    assert top_stripped[3] == " "
+    # Positive positions → None in neg → spaces in bottom row
+    assert bottom_stripped[0] == " "
+    assert bottom_stripped[2] == " "
+    assert bottom_stripped[4] == " "
+
+
+def test_split_shared_scale() -> None:
+    res = sparklines([5, -5], split=True)
+    top_stripped = strip_ansi(res[0])
+    bottom_stripped = strip_ansi(res[1])
+    # Equal magnitude → equal-height bars (both full blocks)
+    assert top_stripped[0] == "█"
+    assert bottom_stripped[1] == "█"
+
+
+def test_split_all_positive() -> None:
+    res = sparklines([1, 2, 3], split=True)
+    assert len(res) == 2
+    # No negatives → bottom row is all spaces
+    assert res[1] == "   "
+
+
+def test_split_all_negative() -> None:
+    res = sparklines([-1, -2, -3], split=True)
+    assert len(res) == 2
+    # No positives → top row is all spaces
+    assert res[0] == "   "
+
+
+def test_split_gaps() -> None:
+    res = sparklines([1, None, -1], split=True)
+    assert len(res) == 2
+    # None passes through to both rows as spaces
+    assert strip_ansi(res[0])[1] == " "
+    assert strip_ansi(res[1])[1] == " "
+
+
+def test_split_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    main(["-s", "3", "-1", "4", "-2", "5"])
+    out, _ = capsys.readouterr()
+    lines = out.rstrip("\n").split("\n")
+    assert len(lines) == 2
 
 
 def test_main_version(capsys: pytest.CaptureFixture[str]) -> None:

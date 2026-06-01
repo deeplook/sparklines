@@ -313,6 +313,7 @@ def test_demo_consistency() -> None:
     res = demo([])
 
     assert strip_ansi(exp) == strip_ansi(res), "Demo output has changed. Verify it and update demo-output!"
+    assert "\x1b[7m" in res, "Demo inverted output is missing ANSI reverse video codes"
 
 
 def test_main_version(capsys: pytest.CaptureFixture[str]) -> None:

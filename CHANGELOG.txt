@@ -49,3 +49,12 @@
 0.7.0: Eighth release:
 
 - Changed license from GPL to MIT starting with version 0.7.0
+
+0.8.0: Ninth release:
+
+- Added inverted sparklines: pass inverted=True (or -i/--inverted on the CLI)
+  to render bars hanging downward from a top baseline. Uses ANSI reverse video
+  with the complement block character for full 8-level downward resolution,
+  matching the resolution of upward bars. Falls back to top-fill Unicode
+  characters (▔▀█) when NO_COLOR, ANSI_COLORS_DISABLED, or TERM=dumb is set.
+- Multi-line inverted sparklines (num_lines > 1) are fully supported.

@@ -22,3 +22,14 @@ sparklines -n 3 3 1 4 1 5 9 2 6
 sparklines 3 1 4 1 5 9 2 6 None 6 2 9 5 1 4 1 3
 >>> print(sparklines([3, 1, 4, 1, 5, 9, 2, 6, None, 6, 2, 9, 5, 1, 4, 1, 3])[0])
 ▃▁▄▁▄█▂▅ ▅▂█▄▁▄▁▃
+
+- Inverted one-line sparkline (bars hang downward)
+sparklines -i 3 1 4 1 5 9 2 6
+>>> print(sparklines([3, 1, 4, 1, 5, 9, 2, 6], inverted=True)[0])
+▅▇▄▇▄█▆▃
+
+- Inverted multi-line sparkline (n=2)
+sparklines -i -n 2 3 1 4 1 5 9 2 6
+>>> for line in sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=2, inverted=True): print(line)
+▃▇▁▇██▅█
+     █ ▆

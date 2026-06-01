@@ -130,6 +130,12 @@ def main(argv: Optional[list[str]] = None) -> None:
     """
     p.add_argument("-w", "--wrap", metavar="PERIOD", type=int, help=help_wrap)
 
+    help_inv = """Render bars hanging downward from a top baseline using ANSI
+        reverse video. Gives full 8-level resolution for downward bars. Pass
+        positive (absolute) values; intended for negative datasets rendered
+        below a zero line."""
+    p.add_argument("-i", "--inverted", action="store_true", default=False, help=help_inv)
+
     a = args = p.parse_args(argv)
 
     numbers = args.nums
@@ -149,6 +155,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         minimum=a.min,
         maximum=a.max,
         wrap=args.wrap,
+        inverted=a.inverted,
     ):
         print(line)
 

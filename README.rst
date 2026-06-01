@@ -40,13 +40,14 @@ plausibility tests in sensor networks as shown in fig. 1 below:
    Fig. 1: Example usecase for such "sparklines" on the command-line,
    showing IoT sensor values (generating code not included here).
 
-Due to limitations of available Unicode characters this works best when all
-values are positive. And even then true sparklines that look more like lines
-and less like bars are a real challenge, because they would need multiple
-characters with a single horizontal line on different vertical positions. This
-would work only with a dedicated font, which is way beyond the scope of this
-tool and which would significantly complicate its usage. So we stick to these
-characters: "▁▂▃▄▅▆▇█", and use a blank for missing values.
+This works best when all values are positive, though negative values are
+supported via inverted sparklines (see `Inverted sparklines`_ below). True
+sparklines that look more like lines and less like bars are a real challenge,
+because they would need multiple characters with a single horizontal line on
+different vertical positions. This would work only with a dedicated font,
+which is way beyond the scope of this tool and which would significantly
+complicate its usage. So we stick to these characters: "▁▂▃▄▅▆▇█", and use a
+blank for missing values.
 
 Sample output
 -------------
@@ -180,7 +181,7 @@ Programmatic
 ............
 
 And here are sample invocations from interactive Python sessions, copied into
-this README. The main function to use programmatically is 
+this README. The main function to use programmatically is
 ``sparklines.sparklines()``:
 
 .. code-block:: python
@@ -189,14 +190,58 @@ this README. The main function to use programmatically is
 
     In [2]: for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1]):
        ...:     print(line)
-       ...:     
+       ...:
     ▁▃▅▆█ ▅▃▁
 
     In [3]: for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1], num_lines=2):
        ...:     print(line)
-       ...:     
-      ▁▅█ ▁  
+       ...:
+      ▁▅█ ▁
     ▁▅███ █▅▁
+
+
+.. _Inverted sparklines:
+
+Inverted sparklines
+...................
+
+Passing ``inverted=True`` renders bars hanging **downward** from a top
+baseline. This uses ANSI reverse video combined with the complement block
+character to achieve the same 8-level resolution as upward bars. It is
+intended for rendering negative datasets below a zero line by stacking an
+upward sparkline above an inverted one.
+
+Pass absolute (positive) values to the inverted call; the caller is
+responsible for splitting and stacking:
+
+.. code-block:: python
+
+    In [1]: from sparklines import sparklines
+
+    In [2]: data = [50, 30, 80, -20, -60, -10, 40, 10]
+       ...: pos = [v if v > 0 else None for v in data]
+       ...: neg = [abs(v) if v < 0 else None for v in data]
+
+    In [3]: for line in sparklines(pos, num_lines=2):
+       ...:     print(line)
+       ...:
+        █
+    ▅▃█   █▁
+
+    In [4]: for line in sparklines(neg, inverted=True):
+       ...:     print(line)
+       ...:
+       ▀█▔
+
+From the command-line, use ``-i`` / ``--inverted``:
+
+.. code-block:: console
+
+    $ sparklines -i 3 1 4 1 5 9 2 6
+
+When ``NO_COLOR``, ``ANSI_COLORS_DISABLED``, or ``TERM=dumb`` is set,
+inverted bars fall back to top-fill Unicode characters (``▔▀█``) at reduced
+resolution.
 
 
 References
@@ -215,7 +260,7 @@ extra features I was missing, like:
 
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
-- issuing warnings for negative values (allowed, but misleading)
+- inverted sparklines for negative datasets (bars hang downward, full 8-level resolution via ANSI reverse video)
 - highlighting values exceeding some threshold with a different color
 - wrapping long sparklines at some max. length
 - (todo) adding separator characters like ``:`` at regular intervals

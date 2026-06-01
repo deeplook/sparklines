@@ -6,6 +6,7 @@ Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂
 Please read the file README.rst for more information.
 """
 
+import os
 import re
 import sys
 import warnings
@@ -20,17 +21,61 @@ except ImportError:
 
 
 blocks = " ▁▂▃▄▅▆▇█"
+# Complement index: blocks[8 - i] gives the upward char whose reverse-video
+# rendering produces a downward bar of height i/8.
+_COMPLEMENT = [8 - i for i in range(9)]
+# Unicode-only fallback for inverted bars when ANSI is suppressed (NO_COLOR etc.).
+# Maps scaled height 0-8 to the closest available top-fill Unicode character.
+_INVERTED_UNICODE = " ▔▔▔▀▀▀▀█"
 
 
-def _check_negatives(numbers: list[Optional[float]]) -> None:
+def _ansi_ok() -> bool:
+    """Return True if emitting ANSI escape codes is appropriate.
+
+    Respects NO_COLOR, ANSI_COLORS_DISABLED, and TERM=dumb, but does NOT
+    require a TTY — inverted=True is an explicit opt-in to ANSI output.
+    """
+    if os.environ.get("NO_COLOR") or os.environ.get("ANSI_COLORS_DISABLED"):
+        return False
+    if os.environ.get("TERM") == "dumb":
+        return False
+    return True
+
+
+def _check_negatives(numbers: list[Optional[float]], inverted: bool = False) -> None:
     """Raise warning for negative numbers."""
 
-    negatives = filter(lambda x: x < 0, filter(None, numbers))
+    negatives = list(filter(lambda x: x < 0, filter(None, numbers)))
     if any(negatives):
         neg_values = ", ".join(map(str, negatives))
-        msg = "Found negative value(s): {0!s}. ".format(neg_values)
-        msg += "While not forbidden, the output will look unexpected."
-        warnings.warn(msg)
+        suffix = (
+            "Pass absolute values when using inverted=True."
+            if inverted
+            else "While not forbidden, the output will look unexpected."
+        )
+        warnings.warn("Found negative value(s): {0!s}. {1}".format(neg_values, suffix))
+
+
+def _inverted_char(v: int, color: Optional[str] = None) -> str:
+    """Return a character representing a downward bar of height v/8.
+
+    When ANSI is available, uses the complement upward block character under
+    reverse video, giving full 8-level resolution. Falls back to the closest
+    top-fill Unicode character (▔/▀/█) when ANSI is suppressed by NO_COLOR,
+    ANSI_COLORS_DISABLED, or TERM=dumb.
+    """
+    if v == 0:
+        return " "
+    if v == 8:
+        if color and HAVE_TERMCOLOR and _ansi_ok():
+            return termcolor.colored("█", color, force_color=True)
+        return "█"
+    if not _ansi_ok():
+        return _INVERTED_UNICODE[v]
+    ch = blocks[_COMPLEMENT[v]]
+    if HAVE_TERMCOLOR:
+        return termcolor.colored(ch, color, attrs=["reverse"], force_color=True)
+    return "\033[7m{0}\033[27m".format(ch)
 
 
 def _check_emphasis(numbers: list[Optional[float]], emph: list[str]) -> dict[int, str]:
@@ -106,12 +151,19 @@ def sparklines(
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
     wrap: Optional[int] = None,
+    inverted: bool = False,
 ) -> list[str]:
     """
     Return a list of 'sparkline' strings for a given list of input numbers.
 
     The list of input numbers may contain None values, too, for which the
     resulting sparkline will contain a blank character (a space).
+
+    When inverted=True, bars hang downward from a top baseline using ANSI
+    reverse video, giving full 8-level resolution. Pass absolute (positive)
+    values; negative values will produce a warning. Intended for rendering
+    negative datasets below a zero line by stacking with a normal sparkline
+    above it.
 
     Examples:
 
@@ -132,7 +184,7 @@ def sparklines(
         return [""]
 
     # raise warning for negative numbers
-    _check_negatives(numbers)
+    _check_negatives(numbers, inverted=inverted)
 
     values = scale_values(
         numbers, num_lines=num_lines, minimum=minimum, maximum=maximum
@@ -152,10 +204,23 @@ def sparklines(
             subgraph_values = [
                 max(0, v - 8) if v is not None else None for v in subgraph_values
             ]
-        multi_values.reverse()
+        if not inverted:
+            multi_values.reverse()
         lines = []
         for subgraph_values in multi_values:
-            if HAVE_TERMCOLOR and emphasized:
+            if inverted:
+                res = [
+                    (
+                        _inverted_char(
+                            min(int(v), 8),
+                            emphasized.get(point_index + i) if HAVE_TERMCOLOR and emphasized else None,
+                        )
+                        if v is not None
+                        else " "
+                    )
+                    for (i, v) in enumerate(subgraph_values)
+                ]
+            elif HAVE_TERMCOLOR and emphasized:
                 tc = termcolor.colored
                 res = [
                     (
@@ -253,4 +318,25 @@ def demo(nums: Optional[list[Optional[float]]] = None) -> str:
     result.append("{0!s} {1!s}".format(prog, " ".join(map(str, nums))))
     result.append(">>> print(sparklines([{0!s}])[0])".format(", ".join(map(str, nums))))
     result.append(sparklines(nums)[0])
+    result.append("")
+
+    inv_nums = [3, 1, 4, 1, 5, 9, 2, 6]
+    inv_nums1 = list(map(fmt, inv_nums))
+    result.append("- Inverted one-line sparkline (bars hang downward)")
+    result.append("{0!s} -i {1!s}".format(prog, " ".join(inv_nums1)))
+    result.append(
+        ">>> print(sparklines([{0!s}], inverted=True)[0])".format(", ".join(inv_nums1))
+    )
+    result.append(sparklines(inv_nums, inverted=True)[0])
+    result.append("")
+
+    result.append("- Inverted multi-line sparkline (n=2)")
+    result.append("{0!s} -i -n 2 {1!s}".format(prog, " ".join(inv_nums1)))
+    result.append(
+        ">>> for line in sparklines([{0!s}], num_lines=2, inverted=True): print(line)".format(
+            ", ".join(inv_nums1)
+        )
+    )
+    for line in sparklines(inv_nums, num_lines=2, inverted=True):
+        result.append(line)
     return "\n".join(result) + "\n"

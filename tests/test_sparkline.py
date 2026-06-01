@@ -207,16 +207,101 @@ def test_gaps() -> None:
     assert exp == res, (exp, res)
 
 
+def test_inverted_basic() -> None:
+    res = sparklines([3, 1, 4, 1, 5, 9, 2, 6], inverted=True)
+    assert len(res) == 1
+    # ANSI reverse video codes must be present for non-full-block chars
+    assert "\x1b[7m" in res[0]
+    # Full block (max value 9) needs no reverse video
+    assert "█" in res[0]
+    # Stripped of ANSI the chars are the complement upward block characters
+    stripped = strip_ansi(res[0])
+    assert stripped == "▅▇▄▇▄█▆▃"
+
+
+def test_inverted_full_and_empty() -> None:
+    res = sparklines([9, 0, 9], inverted=True)
+    stripped = strip_ansi(res[0])
+    # Max value → full block; zero-equivalent → space
+    assert stripped[0] == "█"
+    assert stripped[2] == "█"
+
+
+def test_inverted_gaps() -> None:
+    res = sparklines([1, None, 1, 2], inverted=True)
+    stripped = strip_ansi(res[0])
+    assert stripped[1] == " "
+
+
+def test_inverted_multiline() -> None:
+    res = sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=2, inverted=True)
+    assert len(res) == 2
+    # Top row contains the base portion of all bars
+    assert "\x1b[7m" in res[0]
+    # Bottom row contains only the overflow of taller bars
+    stripped_top = strip_ansi(res[0])
+    stripped_bottom = strip_ansi(res[1])
+    # Top row has content for every position (no leading spaces)
+    assert stripped_top[0] != " "
+    # Bottom row is mostly spaces (only tallest values overflow)
+    assert stripped_bottom.count(" ") > len(stripped_bottom) // 2
+
+
+def test_inverted_multiline_row_order() -> None:
+    # Tallest value should produce full blocks in both rows;
+    # shortest value should appear only in the top row.
+    res = sparklines([1, 9], num_lines=2, inverted=True)
+    top = strip_ansi(res[0])
+    bottom = strip_ansi(res[1])
+    # Value 9 (max) fills both rows completely
+    assert top[1] == "█"
+    assert bottom[1] == "█"
+    # Value 1 (min) appears only in top row; bottom row position is space
+    assert top[0] != " "
+    assert bottom[0] == " "
+
+
+def test_inverted_with_emph() -> None:
+    res = sparklines([1, 5, 9], inverted=True, emph=["red:ge:5"])
+    assert len(res) == 1
+    # ANSI codes present (both color and reverse video)
+    assert "\x1b[" in res[0]
+
+
+def test_inverted_negative_warning() -> None:
+    with pytest.warns(UserWarning, match="negative"):
+        sparklines([-1, 2, 3], inverted=True)
+
+
+def test_inverted_no_color_fallback() -> None:
+    orig = os.environ.get("NO_COLOR")
+    try:
+        os.environ["NO_COLOR"] = "1"
+        res = sparklines([3, 1, 4, 1, 5, 9, 2, 6], inverted=True)
+        # No ANSI codes in NO_COLOR mode
+        assert "\x1b[" not in res[0]
+        # Falls back to top-fill Unicode characters
+        assert any(ch in res[0] for ch in "▔▀█")
+    finally:
+        if orig is None:
+            del os.environ["NO_COLOR"]
+        else:
+            os.environ["NO_COLOR"] = orig
+
+
+def test_inverted_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    main(["-i", "3", "1", "4", "1", "5", "9", "2", "6"])
+    out, _ = capsys.readouterr()
+    assert "\x1b[7m" in out
+
+
 def test_demo_consistency() -> None:
     toplevel = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     with open(os.path.join(toplevel, "tests", "demo-output")) as stream:
         exp = stream.read()
     res = demo([])
 
-    with open("/tmp/blah", "w") as stream:
-        stream.write(res)
-
-    assert exp == res, "Demo output has changed. Verify it and update demo-output!"
+    assert strip_ansi(exp) == strip_ansi(res), "Demo output has changed. Verify it and update demo-output!"
 
 
 def test_main_version(capsys: pytest.CaptureFixture[str]) -> None:

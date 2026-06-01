@@ -42,10 +42,12 @@ def _ansi_ok() -> bool:
     return True
 
 
-def _check_negatives(numbers: list[Optional[float]], inverted: bool = False) -> None:
+def _check_negatives(
+    numbers: Sequence[Optional[float]], inverted: bool = False
+) -> None:
     """Raise warning for negative numbers."""
 
-    negatives = list(filter(lambda x: x < 0, filter(lambda x: x is not None, numbers)))
+    negatives: list[float] = [x for x in numbers if x is not None and x < 0]
     if any(negatives):
         neg_values = ", ".join(map(str, negatives))
         suffix = (
@@ -80,7 +82,9 @@ def _inverted_char(v: int, color: Optional[str] = None) -> str:
     return f"\033[7m{ch}\033[27m"
 
 
-def _check_emphasis(numbers: list[Optional[float]], emph: list[str]) -> dict[int, str]:
+def _check_emphasis(
+    numbers: Sequence[Optional[float]], emph: list[str]
+) -> dict[int, str]:
     """Find index postions in list of numbers to be emphasized according to emph."""
 
     pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
@@ -109,7 +113,7 @@ def _check_emphasis(numbers: list[Optional[float]], emph: list[str]) -> dict[int
 
 
 def scale_values(
-    numbers: list[Optional[float]],
+    numbers: Sequence[Optional[float]],
     num_lines: int = 1,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
@@ -146,7 +150,7 @@ def scale_values(
 
 
 def sparklines(
-    numbers: Optional[list[Optional[float]]] = None,
+    numbers: Optional[Sequence[Optional[float]]] = None,
     num_lines: int = 1,
     emph: Optional[list[str]] = None,
     verbose: bool = False,

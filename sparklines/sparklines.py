@@ -68,9 +68,7 @@ def _inverted_char(v: int, color: Optional[str] = None) -> str:
         return " "
     if v == 8:
         if color and HAVE_TERMCOLOR and _ansi_ok():
-            return termcolor.colored("█", color, attrs=["reverse"], force_color=True)
-        if _ansi_ok():
-            return "\033[7m█\033[27m"
+            return termcolor.colored("█", color, force_color=True)
         return "█"
     if not _ansi_ok():
         return _INVERTED_UNICODE[v]

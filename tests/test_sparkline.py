@@ -268,9 +268,13 @@ def test_inverted_with_emph() -> None:
     assert len(res) == 1
     # ANSI codes present (both color and reverse video)
     assert "\x1b[" in res[0]
-    # Full-block emphasized bar (max value 9) must use reverse video, not just plain color
-    full_block_res = sparklines([9], inverted=True, emph=["red:ge:1"])
-    assert "\x1b[7m" in full_block_res[0]
+    # Full-block emphasized bar uses the emphasis color directly — no reverse video
+    # Use explicit range so value 9 maps to height 8 (not the dv==0 mid-height path)
+    full_block_res = sparklines(
+        [9], inverted=True, emph=["red:ge:1"], minimum=0, maximum=9
+    )
+    assert "\x1b[" in full_block_res[0]
+    assert "\x1b[7m" not in full_block_res[0]
 
 
 def test_inverted_with_explicit_range() -> None:

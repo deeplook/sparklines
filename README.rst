@@ -41,7 +41,8 @@ plausibility tests in sensor networks as shown in fig. 1 below:
    showing IoT sensor values (generating code not included here).
 
 This works best when all values are positive, though negative values are
-supported via inverted sparklines (see `Inverted sparklines`_ below). True
+fully supported: mixed data auto-splits into two rows, all-negative data
+renders as inverted (downward) bars (see `Mixed and negative datasets`_ below). True
 sparklines that look more like lines and less like bars are a real challenge,
 because they would need multiple characters with a single horizontal line on
 different vertical positions. This would work only with a dedicated font,
@@ -200,68 +201,58 @@ this README. The main function to use programmatically is
     ▁▅███ █▅▁
 
 
-.. _Inverted sparklines:
+.. _Mixed and negative datasets:
 
-Inverted sparklines
-...................
+Mixed and negative datasets
+...........................
 
-**Split mode (recommended for mixed datasets)**
-
-When your data contains both positive and negative values, pass ``split=True``
-for a two-row rendering: upward bars for positives on top, downward bars for
-negatives below, both scaled to a shared maximum:
+When your data contains both positive and negative values, ``sparklines``
+automatically renders a proportional split: upward bars for positives on top,
+downward bars for negatives below. No flags needed:
 
 .. code-block:: python
 
     In [1]: from sparklines import sparklines
 
     In [2]: data = [50, 30, 80, -20, -60, -10, 40, 10]
-       ...: for line in sparklines(data, split=True):
+       ...: for line in sparklines(data):
        ...:     print(line)
        ...:
     ▅▃█   █▁
-       ▀█▔
+       ▂▆▁
 
-From the command-line, use ``-s`` / ``--split``:
+All-negative data is rendered automatically as inverted (downward) bars.
 
-.. code-block:: console
+**Row count: -n / --num-lines**
 
-    $ sparklines -s 3 -1 4 -1 5 -9 2 -6
+The ``-n`` argument accepts three forms:
 
-**Manual split (advanced)**
-
-For full control over scaling or stacking, you can split and scale manually.
-Negative values passed to ``inverted=True`` are automatically converted to
-their absolute values, so each half can be rendered independently:
-
-.. code-block:: python
-
-    In [1]: from sparklines import sparklines
-
-    In [2]: data = [50, 30, 80, -20, -60, -10, 40, 10]
-       ...: pos = [v if v > 0 else None for v in data]
-       ...: neg = [abs(v) if v < 0 else None for v in data]
-
-    In [3]: for line in sparklines(pos, num_lines=2):
-       ...:     print(line)
-       ...:
-        █
-    ▅▃█   █▁
-
-    In [4]: for line in sparklines(neg, inverted=True):
-       ...:     print(line)
-       ...:
-       ▀█▔
-
-From the command-line, use ``-i`` / ``--inverted``:
+- Integer (default ``1``): total rows, split proportionally between positive
+  and negative halves. Both halves share a common scale maximum.
+- ``auto``: smallest total row count that gives a true proportional split
+  (``pos_rows / total == pos_max / range``).
+- ``up:down`` (e.g. ``2:1``): explicit per-side layout; each half is scaled
+  independently to its own maximum.
 
 .. code-block:: console
 
-    $ sparklines -i 3 1 4 1 5 9 2 6
+    $ sparklines -n auto 1 2 3 -1 -2 -3 0 4 5 6
+    $ sparklines -n 2:1  1 2 3 -1 -2 -3 0 4 5 6
 
-When ``NO_COLOR``, ``ANSI_COLORS_DISABLED``, or ``TERM=dumb`` is set,
-inverted bars fall back to top-fill Unicode characters (``▔▀█``) at reduced
-resolution.
+**Zero handling: --zero**
+
+- ``--zero up`` (default): zeros sit on the positive baseline.
+- ``--zero none``: zeros are rendered as gaps on both sides.
+
+.. code-block:: console
+
+    $ sparklines --zero up   0 1 2 -1 -2 0
+    $ sparklines --zero none 0 1 2 -1 -2 0
+
+Downward bars use ANSI reverse video with the complement block character for
+full 8-level resolution, matching upward bars. When ``NO_COLOR``,
+``ANSI_COLORS_DISABLED``, or ``TERM=dumb`` is set, they fall back to top-fill
+Unicode characters (``▔▀█``) at reduced resolution.
 
 
 References
@@ -280,8 +271,11 @@ extra features I was missing, like:
 
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
-- split mode (``split=True`` / ``-s``) for mixed positive/negative datasets with automatic two-row rendering
-- inverted sparklines for negative datasets (bars hang downward, full 8-level resolution via ANSI reverse video)
+- automatic split rendering for mixed positive/negative datasets (no flags needed)
+- all-negative data rendered as inverted (downward) bars automatically
+- proportional row allocation (``-n auto``) keeps the zero line meaningful
+- explicit per-side layout with ``-n up:down`` and independent scaling
+- zero handling via ``--zero up`` (baseline) or ``--zero none`` (gap)
 - highlighting values exceeding some threshold with a different color
 - wrapping long sparklines at some max. length
 - (todo) adding separator characters like ``:`` at regular intervals

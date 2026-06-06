@@ -12,7 +12,7 @@ from importlib.metadata import version
 from typing import Optional
 
 if sys.version_info.major >= 3:
-    from sparklines.sparklines import sparklines, demo
+    from sparklines.sparklines import NumLines, sparklines, demo
 else:
     from sparklines import sparklines, demo
 
@@ -54,6 +54,34 @@ def test_valid_emphasis(arg: str) -> str:
         return arg
 
     raise ValueError()
+
+
+def parse_num_lines(arg: str) -> "NumLines":
+    """Parse -n argument: integer, 'auto', or 'up:down'."""
+    if arg == "auto":
+        return "auto"
+    if ":" in arg:
+        parts = arg.split(":", 1)
+        try:
+            up, down = int(parts[0]), int(parts[1])
+        except ValueError:
+            raise argparse.ArgumentTypeError(
+                f"invalid row split: {arg!r} (use up:down, e.g. 4:4)"
+            )
+        if up < 1 or down < 1:
+            raise argparse.ArgumentTypeError(
+                f"row split must be >= 1 on each side, got {arg!r}"
+            )
+        return (up, down)
+    try:
+        n = int(arg)
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            f"invalid row count: {arg!r} (use a positive integer, 'auto', or up:down)"
+        )
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"-n must be >= 1, got {n}")
+    return n
 
 
 def main(argv: Optional[list[str]] = None) -> None:
@@ -105,15 +133,24 @@ def main(argv: Optional[list[str]] = None) -> None:
         help=help_emph,
     )
 
-    help_n = """The number of lines for one sparkline (higher numbers
-        increase the resolution). An integer >= 1 (default: 1)."""
     p.add_argument(
-        "-n", "--num-lines", metavar="NUMBER", help=help_n, default="1", type=int
+        "-n",
+        "--num-lines",
+        metavar="NUMBER",
+        help="rows per sparkline: integer, 'auto', or up:down (e.g. 4:4). Default: 1.",
+        default=1,
+        type=parse_num_lines,
+    )
+
+    p.add_argument(
+        "--zero",
+        choices=["up", "none"],
+        default="up",
+        help="how to render 0: 'up' = baseline on positive side (default); 'none' = gap on both sides.",
     )
 
     help_nums = """A positive numeric value >= 0, e.g. 0, 3.14, 2e2.
-        Negative numbers work, too, but will give unexpected results
-        and raise a warning. The string values null and None (in any
+        Negative numbers are supported. The string values null and None (in any
         spelling) represent empty slots, but not the value 0!"""
     p.add_argument(
         "nums",
@@ -129,19 +166,6 @@ def main(argv: Optional[list[str]] = None) -> None:
     for example daily or weekly.
     """
     p.add_argument("-w", "--wrap", metavar="PERIOD", type=int, help=help_wrap)
-
-    help_inv = """Render bars hanging downward from a top baseline using ANSI
-        reverse video. Gives full 8-level resolution for downward bars. Pass
-        positive (absolute) values; intended for negative datasets rendered
-        below a zero line."""
-    p.add_argument(
-        "-i", "--inverted", action="store_true", default=False, help=help_inv
-    )
-
-    help_split = """Automatically split positive and negative values into
-        stacked rows: positive values as upward bars on top, negative values
-        as downward bars below, both scaled to a shared maximum."""
-    p.add_argument("-s", "--split", action="store_true", default=False, help=help_split)
 
     a = args = p.parse_args(argv)
 
@@ -162,8 +186,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         minimum=a.min,
         maximum=a.max,
         wrap=args.wrap,
-        inverted=a.inverted,
-        split=a.split,
+        zero=a.zero,
     ):
         print(line)
 

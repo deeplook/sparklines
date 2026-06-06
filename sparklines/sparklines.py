@@ -137,7 +137,7 @@ def proportional(pos_max: float, neg_max: float, i: int, j: int) -> bool:
 
 
 def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
-    """Return the (up, down) row split that best approximates proportionality for n rows."""
+    """Return best (up, down) row split approximating proportionality for n rows."""
     if n == 2:
         return 1, 1
     size = pos_max + neg_max
@@ -319,7 +319,7 @@ def _render_split(
 
 
 def _validate_num_lines(num_lines: NumLines) -> None:
-    """Raise ValueError if num_lines is not a valid positive integer, 'auto', or (up, down) tuple."""
+    """Raise ValueError if num_lines is not a valid row-count spec."""
     if isinstance(num_lines, int) and num_lines > 0:
         return
     if num_lines == "auto":
@@ -327,7 +327,8 @@ def _validate_num_lines(num_lines: NumLines) -> None:
     if isinstance(num_lines, tuple) and all(n > 0 for n in num_lines):
         return
     raise ValueError(
-        f"num_lines must be a positive integer, 'auto', or a (up, down) tuple; got {num_lines!r}"
+        f"num_lines must be a positive int, 'auto', or (up, down) tuple; "
+        f"got {num_lines!r}"
     )
 
 

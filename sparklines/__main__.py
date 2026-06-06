@@ -139,7 +139,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         "--zero",
         choices=["up", "none"],
         default="up",
-        help="how to render 0: 'up' = baseline on positive side (default); 'none' = gap.",
+        help="0 handling: 'up' = positive baseline (default); 'none' = gap.",
     )
 
     help_nums = """A positive numeric value >= 0, e.g. 0, 3.14, 2e2.

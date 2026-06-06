@@ -92,13 +92,6 @@ def main(argv: Optional[list[str]] = None) -> None:
     p = argparse.ArgumentParser(description=desc)
 
     p.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Provide more verbose (debugging) output (none for now).",
-    )
-
-    p.add_argument(
         "-V",
         "--version",
         action="version",
@@ -146,7 +139,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         "--zero",
         choices=["up", "none"],
         default="up",
-        help="how to render 0: 'up' = baseline on positive side (default); 'none' = gap on both sides.",
+        help="how to render 0: 'up' = baseline on positive side (default); 'none' = gap.",
     )
 
     help_nums = """A positive numeric value >= 0, e.g. 0, 3.14, 2e2.
@@ -182,7 +175,6 @@ def main(argv: Optional[list[str]] = None) -> None:
         numbers,
         num_lines=a.num_lines,
         emph=a.emphasize,
-        verbose=a.verbose,
         minimum=a.min,
         maximum=a.max,
         wrap=args.wrap,

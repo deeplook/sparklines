@@ -70,7 +70,6 @@ def _check_emphasis(
     numbers: Sequence[Optional[float]], emph: list[str]
 ) -> dict[int, str]:
     """Find index postions in list of numbers to be emphasized according to emph."""
-
     pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
     # find values to be highlighted
     emphasized = {}  # index: color
@@ -103,7 +102,6 @@ def scale_values(
     maximum: Optional[float] = None,
 ) -> list[Optional[int]]:
     """Scale input numbers to appropriate range."""
-
     # find min/max values, ignoring Nones
     filtered = [n for n in numbers if n is not None]
     min_ = min(filtered) if minimum is None else minimum
@@ -139,7 +137,7 @@ def proportional(pos_max: float, neg_max: float, i: int, j: int) -> bool:
 
 
 def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
-    """Return the (up, down) row split that best approximates proportionality for n total rows."""
+    """Return the (up, down) row split that best approximates proportionality for n rows."""
     if n == 2:
         return 1, 1
     size = pos_max + neg_max
@@ -320,11 +318,23 @@ def _render_split(
     return pos_lines + neg_lines
 
 
+def _validate_num_lines(num_lines: NumLines) -> None:
+    """Raise ValueError if num_lines is not a valid positive integer, 'auto', or (up, down) tuple."""
+    if isinstance(num_lines, int) and num_lines > 0:
+        return
+    if num_lines == "auto":
+        return
+    if isinstance(num_lines, tuple) and all(n > 0 for n in num_lines):
+        return
+    raise ValueError(
+        f"num_lines must be a positive integer, 'auto', or a (up, down) tuple; got {num_lines!r}"
+    )
+
+
 def sparklines(
     numbers: Optional[Sequence[Optional[float]]] = None,
     num_lines: NumLines = 1,
     emph: Optional[list[str]] = None,
-    verbose: bool = False,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
     wrap: Optional[int] = None,
@@ -351,11 +361,7 @@ def sparklines(
     """
     if numbers is None:
         numbers = []
-    assert (
-        (isinstance(num_lines, int) and num_lines > 0)
-        or num_lines == "auto"
-        or (isinstance(num_lines, tuple) and all(n > 0 for n in num_lines))
-    )
+    _validate_num_lines(num_lines)
 
     if len(numbers) == 0:
         return [""]
@@ -366,7 +372,7 @@ def sparklines(
 
     mn, mx = min(filtered), max(filtered)
 
-    if mn < 0 and mx > 0:
+    if mn < 0 < mx:
         return _render_split(numbers, num_lines, emph, wrap, zero)
 
     if mn < 0:
@@ -405,6 +411,7 @@ def batch(batch_size: Optional[int], items: Sequence[Any]) -> list[list[Any]]:
 
 
 def list_join(separator: str, lists: list[list[Any]]) -> list[Any]:
+    """Join a list of lists with separator items between each sublist."""
     result = []
     for lst, _next in zip(lists[:], lists[1:]):
         result.extend(lst)

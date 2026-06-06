@@ -134,10 +134,12 @@ def scale_values(
 
 
 def proportional(pos_max: float, neg_max: float, i: int, j: int) -> bool:
+    """Return True if row split i:j is exactly proportional to the pos/neg range."""
     return math.isclose(pos_max * j, neg_max * i, rel_tol=0, abs_tol=1e-9)
 
 
 def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
+    """Return the (up, down) row split that best approximates proportionality for n total rows."""
     if n == 2:
         return 1, 1
     size = pos_max + neg_max
@@ -156,6 +158,7 @@ def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
 
 
 def ideal_num_rows(pos_max: float, neg_max: float) -> int:
+    """Return the smallest total row count that yields an exactly proportional split."""
     for n in range(2, 101):
         i, j = allocate_rows(pos_max, neg_max, n)
         if proportional(pos_max, neg_max, i, j):
@@ -166,6 +169,7 @@ def ideal_num_rows(pos_max: float, neg_max: float) -> int:
 def resolve_mixed_rows(
     num_lines: NumLines, pos_max: float, neg_max: float
 ) -> tuple[int, int]:
+    """Resolve a NumLines spec into a concrete (up_rows, down_rows) pair."""
     if isinstance(num_lines, tuple):
         return num_lines
     if num_lines == "auto":
@@ -175,16 +179,60 @@ def resolve_mixed_rows(
     return allocate_rows(pos_max, neg_max, n)
 
 
+def _resolve_nl(num_lines: NumLines, side: Literal["pos", "neg"]) -> int:
+    """Resolve NumLines to a concrete row count for one side of a non-split render."""
+    if num_lines == "auto":
+        return 1
+    if isinstance(num_lines, tuple):
+        return num_lines[0] if side == "pos" else num_lines[1]
+    return num_lines
+
+
+def _render_row(
+    row_values: list[Optional[int]],
+    point_base: int,
+    inverted: bool,
+    emphasized: dict[int, str],
+) -> str:
+    """Render one horizontal row of scaled bar values to a string."""
+    if inverted:
+        return "".join(
+            (
+                _inverted_char(
+                    v,
+                    emphasized.get(point_base + i)
+                    if HAVE_TERMCOLOR and emphasized
+                    else None,
+                )
+                if v is not None
+                else " "
+            )
+            for i, v in enumerate(row_values)
+        )
+    if HAVE_TERMCOLOR and emphasized:
+        return "".join(
+            (
+                termcolor.colored(
+                    blocks[int(v)], emphasized.get(point_base + i, "white")
+                )
+                if v is not None
+                else " "
+            )
+            for i, v in enumerate(row_values)
+        )
+    return "".join(blocks[int(v)] if v is not None else " " for v in row_values)
+
+
 def _render_series(
     numbers: Sequence[Optional[float]],
     num_lines: int = 1,
     emph: Optional[list[str]] = None,
-    verbose: bool = False,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
     wrap: Optional[int] = None,
     inverted: bool = False,
 ) -> list[str]:
+    """Render a sequence of scaled numbers as a list of sparkline strings."""
     if inverted:
         numbers = [abs(v) if v is not None and v < 0 else v for v in numbers]
 
@@ -196,62 +244,31 @@ def _render_series(
 
     point_index = 0
     subgraphs = []
-    for subgraph_values in batch(wrap, values):
+    for batch_values in batch(wrap, values):
+        remaining: list[Optional[int]] = list(batch_values)
         multi_values = []
-        for i in range(num_lines):
+        for _ in range(num_lines):
             multi_values.append(
-                [min(v, 8) if v is not None else None for v in subgraph_values]
+                [min(v, 8) if v is not None else None for v in remaining]
             )
-            subgraph_values = [
-                max(0, v - 8) if v is not None else None for v in subgraph_values
-            ]
+            remaining = [max(0, v - 8) if v is not None else None for v in remaining]
         if not inverted:
             multi_values.reverse()
-        lines = []
-        for subgraph_values in multi_values:
-            if inverted:
-                res = [
-                    (
-                        _inverted_char(
-                            v,
-                            emphasized.get(point_index + i)
-                            if HAVE_TERMCOLOR and emphasized
-                            else None,
-                        )
-                        if v is not None
-                        else " "
-                    )
-                    for (i, v) in enumerate(subgraph_values)
-                ]
-            elif HAVE_TERMCOLOR and emphasized:
-                tc = termcolor.colored
-                res = [
-                    (
-                        tc(blocks[int(v)], emphasized.get(point_index + i, "white"))
-                        if v is not None
-                        else " "
-                    )
-                    for (i, v) in enumerate(subgraph_values)
-                ]
-            else:
-                res = [
-                    blocks[int(v)] if v is not None else " " for v in subgraph_values
-                ]
-            lines.append("".join(res))
+        lines = [
+            _render_row(row_values, point_index, inverted, emphasized)
+            for row_values in multi_values
+        ]
         subgraphs.append(lines)
-        point_index += len(subgraph_values)
+        point_index += len(batch_values)
 
     return list_join("", subgraphs)
 
 
-def _render_split(
+def _partition_series(
     numbers: Sequence[Optional[float]],
-    num_lines: NumLines,
-    emph: Optional[list[str]],
-    verbose: bool,
-    wrap: Optional[int],
     zero: Literal["up", "none"],
-) -> list[str]:
+) -> tuple[list[Optional[float]], list[Optional[float]], float, float]:
+    """Split numbers into (pos_series, neg_series, pos_max, neg_max)."""
     if zero == "up":
         pos: list[Optional[float]] = [
             v if v is not None and v >= 0 else None for v in numbers
@@ -261,12 +278,20 @@ def _render_split(
     neg: list[Optional[float]] = [
         abs(v) if v is not None and v < 0 else None for v in numbers
     ]
+    pos_max = max((v for v in pos if v is not None), default=0.0)
+    neg_max = max((v for v in neg if v is not None), default=0.0)
+    return pos, neg, pos_max, neg_max
 
-    pos_vals = [v for v in pos if v is not None]
-    neg_vals = [v for v in neg if v is not None]
-    pos_max = max(pos_vals) if pos_vals else 0.0
-    neg_max = max(neg_vals) if neg_vals else 0.0
 
+def _render_split(
+    numbers: Sequence[Optional[float]],
+    num_lines: NumLines,
+    emph: Optional[list[str]],
+    wrap: Optional[int],
+    zero: Literal["up", "none"],
+) -> list[str]:
+    """Render mixed positive/negative data as stacked up/down sparkline rows."""
+    pos, neg, pos_max, neg_max = _partition_series(numbers, zero)
     up_rows, down_rows = resolve_mixed_rows(num_lines, pos_max, neg_max)
 
     if isinstance(num_lines, tuple):
@@ -279,7 +304,6 @@ def _render_split(
         pos,
         up_rows,
         emph=emph,
-        verbose=verbose,
         minimum=0.0,
         maximum=pos_M,
         wrap=wrap,
@@ -288,7 +312,6 @@ def _render_split(
         neg,
         down_rows,
         emph=emph,
-        verbose=verbose,
         minimum=0.0,
         maximum=neg_M,
         wrap=wrap,
@@ -344,38 +367,30 @@ def sparklines(
     mn, mx = min(filtered), max(filtered)
 
     if mn < 0 and mx > 0:
-        return _render_split(numbers, num_lines, emph, verbose, wrap, zero)
+        return _render_split(numbers, num_lines, emph, wrap, zero)
 
     if mn < 0:
         neg_only: list[Optional[float]] = [
             abs(v) if v is not None else None for v in numbers
         ]
-        nl_neg: int = (
-            1
-            if num_lines == "auto"
-            else num_lines[1]
-            if isinstance(num_lines, tuple)
-            else num_lines
-        )
         return _render_series(
             neg_only,
-            nl_neg,
+            _resolve_nl(num_lines, "neg"),
             emph,
-            verbose,
             minimum=minimum,
             maximum=maximum,
             wrap=wrap,
             inverted=True,
         )
 
-    nl: int = (
-        1
-        if num_lines == "auto"
-        else num_lines[0]
-        if isinstance(num_lines, tuple)
-        else num_lines
+    return _render_series(
+        numbers,
+        _resolve_nl(num_lines, "pos"),
+        emph,
+        minimum,
+        maximum,
+        wrap,
     )
-    return _render_series(numbers, nl, emph, verbose, minimum, maximum, wrap)
 
 
 def batch(batch_size: Optional[int], items: Sequence[Any]) -> list[list[Any]]:

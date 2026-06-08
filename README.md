@@ -114,6 +114,21 @@ for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1], num_lines=2):
 ```
 
 
+### Real-world example: stock prices
+
+Pipe 60 days of closing prices straight from Yahoo Finance (no install needed):
+
+```bash
+uvx --with yfinance python -c "
+import yfinance as yf
+prices = yf.Ticker('TSLA').history(period='60d')['Close']
+print(' '.join(f'{p:.2f}' for p in prices))
+" | sparklines
+```
+
+Swap `TSLA` for any ticker, `60d` for any period (`1mo`, `1y`, `max`, …), or `Close` for `Open` / `High` / `Volume`.
+
+
 ### Mixed and negative datasets
 
 Mixed positive/negative data is split automatically — no flags needed:

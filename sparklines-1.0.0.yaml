@@ -1,0 +1,71 @@
+# uv run --with pyyaml asciinema-player/demo/gen_asciicast.py
+cols: 80
+rows: 24
+type_delay: 0.05
+type_variance: 1.5
+pause_after_cmd: 1.0
+shell: bash
+steps:
+  - marker: "Pipe input"
+  - cmd: sparklines 2 7 1 8 2 8 1 8
+  - cmd: "echo 2 7 1 8 2 8 1 8 | sparklines"
+  - cmd: |
+      cat > numbers.txt <<'EOF'
+      2 7 1 8 2 8 1 8
+      EOF
+      sparklines < numbers.txt
+  - cmd: "# Sparklines 1.0.0 demo"
+  - cmd: sparklines 0 2. 1e0
+
+
+  - marker: "Basic"
+  - cmd: sparklines 1 2 3 4 5 6 7 8
+  - cmd: sparklines 3 1 4 1 5 9 2 6
+  - cmd: ""
+
+  - marker: "Multi-line"
+  - cmd: sparklines -n 2 3 1 4 1 5 9 2 6
+  - cmd: sparklines -n 3 3 1 4 1 5 9 2 6
+
+  - marker: "Gaps"
+  - cmd: sparklines 3 1 4 null 5 9 null 6
+
+  - marker: "Mixed positive/negative (auto-split)"
+  - cmd: sparklines 50 30 80 -20 -60 -10 40 10
+  - cmd: sparklines -n 2 50 30 80 -20 -60 -10 40 10
+
+  - marker: "Proportional row allocation"
+  - cmd: sparklines -n auto 1 2 3 -1 -2 -3 0 4 5 6
+
+  - marker: "Explicit per-side layout"
+  - cmd: sparklines -n 2:1 1 2 3 -1 -2 -3 0 4 5 6
+
+  - marker: "Zero handling"
+  - cmd: sparklines --zero up   0 1 2 -1 -2 0
+  - cmd: sparklines --zero none 0 1 2 -1 -2 0
+
+  - marker: "Fallback rendering (no ANSI)"
+  - cmd: sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+  - cmd: NO_COLOR=1 sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+  - cmd: sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+  - cmd: ANSI_COLORS_DISABLED=1 sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+  - cmd: sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+  - cmd: TERM=dumb sparklines 50 30 80 -20 -60 -10 40 10 -e red:lt:0
+
+  - marker: "Color emphasis"
+  - cmd: sparklines -e red:gt:5 3 1 4 1 5 9 2 6
+  - cmd: sparklines -e green:le:3 3 1 4 1 5 9 2 6
+
+  - marker: "Emphasis by index"
+  - cmd: sparklines -e red:[0:3] 3 1 4 1 5 9 2 6
+  - cmd: sparklines -e blue:[::2] 3 1 4 1 5 9 2 6
+  - cmd: sparklines -e yellow:[-2:] 3 1 4 1 5 9 2 6
+  - cmd: sparklines -e red:[0:3] -e blue:[5:] 3 1 4 1 5 9 2 6
+
+  - marker: "Line wrapping"
+  - cmd: sparklines --wrap 4 1 2 3 4 5 6 7 8
+  - cmd: sparklines --wrap 3 -4 -5 -6 1 2 3
+  - cmd: sparklines --wrap 4 1 -1 2 -2 3 -3 4 -4
+
+  - cmd: sparklines -e red:gt:3 -e green:le:3 3 1 4 1 5 9 2 6
+  - poster: true

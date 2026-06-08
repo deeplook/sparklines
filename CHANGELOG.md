@@ -31,6 +31,9 @@
   bars by position rather than value, using standard Python slice syntax
   (e.g. "red:[0:3]", "blue:[::2]", "yellow:[-1:]"). Value and slice
   expressions can be mixed freely.
+- Fixed: --wrap with mixed positive/negative data now correctly interleaves
+  the positive and negative rows per window, rather than emitting all positive
+  windows followed by all negative windows.
 
 ## 0.7.0 — Eighth release
 

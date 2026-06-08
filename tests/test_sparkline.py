@@ -186,6 +186,19 @@ def test_wrap_consistency() -> None:
     assert res == exp
 
 
+def test_wrap_mixed_data() -> None:
+    """Test that wrap interleaves pos/neg rows per window, not all-pos then all-neg."""
+    res = [strip_ansi(line) for line in sparklines([-4, -5, -6, 1, 2, 3], wrap=3)]
+    # Window 0: no positives (top row blank), neg bars (bottom row non-blank)
+    assert res[0].strip() == ""
+    assert res[1].strip() != ""
+    # separator
+    assert res[2] == ""
+    # Window 1: pos bars (top row non-blank), no negatives (bottom row blank)
+    assert res[3].strip() != ""
+    assert res[4].strip() == ""
+
+
 def test_wrap_escaping_consistency() -> None:
     """Test that emphasis ANSI codes don't affect bar characters when stripped."""
     no_emph = sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3)

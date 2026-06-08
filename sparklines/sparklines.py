@@ -318,24 +318,30 @@ def _render_split(
 
     emphasized = _check_emphasis(numbers, emph) if emph else {}
 
-    pos_lines = _render_series(
-        pos,
-        up_rows,
-        emphasized=emphasized,
-        minimum=0.0,
-        maximum=pos_M,
-        wrap=wrap,
-    )
-    neg_lines = _render_series(
-        neg,
-        down_rows,
-        emphasized=emphasized,
-        minimum=0.0,
-        maximum=neg_M,
-        wrap=wrap,
-        inverted=True,
-    )
-    return pos_lines + neg_lines
+    # Scale globally so all windows share the same scale.
+    pos_scaled = scale_values(pos, num_lines=up_rows, minimum=0.0, maximum=pos_M)
+    neg_scaled = scale_values(neg, num_lines=down_rows, minimum=0.0, maximum=neg_M)
+
+    def _multi(scaled: list[Optional[int]], n: int) -> list[list[Optional[int]]]:
+        remaining = list(scaled)
+        rows = []
+        for _ in range(n):
+            rows.append([min(v, 8) if v is not None else None for v in remaining])
+            remaining = [max(0, v - 8) if v is not None else None for v in remaining]
+        return rows
+
+    subgraphs = []
+    point_index = 0
+    for pos_win, neg_win in zip(batch(wrap, pos_scaled), batch(wrap, neg_scaled)):
+        pos_rows = list(reversed(_multi(pos_win, up_rows)))
+        neg_rows = _multi(neg_win, down_rows)
+        lines = [
+            _render_row(row, point_index, False, emphasized) for row in pos_rows
+        ] + [_render_row(row, point_index, True, emphasized) for row in neg_rows]
+        subgraphs.append(lines)
+        point_index += len(pos_win)
+
+    return list_join("", subgraphs)
 
 
 def _validate_num_lines(num_lines: NumLines) -> None:

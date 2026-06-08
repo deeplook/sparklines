@@ -40,10 +40,13 @@ class MonitorBar(Static, can_focus=False):
     }
     """
 
-    def on_mount(self) -> None:  # noqa: D102
+    def __init__(self) -> None:  # noqa: D107
+        super().__init__()
         self._cpu: deque[float] = deque([0.0] * HISTORY, maxlen=HISTORY)
         self._mem: deque[float] = deque([0.0] * HISTORY, maxlen=HISTORY)
         self._prev_mem: float = psutil.virtual_memory().used / 1024**2
+
+    def on_mount(self) -> None:  # noqa: D102
         self.set_interval(1.0, self._tick)
 
     def _tick(self) -> None:
@@ -79,7 +82,7 @@ class CPUMonitorApp(App):
     TITLE = "CPU / Memory Monitor"
     BINDINGS = [("q", "quit", "Quit")]
 
-    def compose(self) -> ComposeResult:  # noqa: D102
+    def compose(self) -> ComposeResult:  # noqa: D102  # skipcq: PYL-R0201
         yield MonitorBar()
 
 

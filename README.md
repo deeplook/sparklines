@@ -12,7 +12,7 @@
 Sparklines brings Edward Tufte's [sparklines] to your terminal — compact Unicode bar charts like ▃▁▄▁▅█▂▅, right in your shell or Python code. Originally built for sanity-checking sensor data in IoT networks, it works anywhere you need a quick visual summary of a sequence of numbers.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/deeplook/sparklines/main/example_sensors.png" width="75%" alt="example usecase with sensor values">
+  <img src="https://raw.githubusercontent.com/deeplook/sparklines/main/example_sensors.png" width="100%" alt="example usecase with sensor values">
   <br>
   <em>Example usecase for such "sparklines" on the command-line,
   showing IoT sensor values (generating code not included here).</em>

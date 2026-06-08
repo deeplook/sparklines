@@ -3,345 +3,34 @@
 Please read the file README.rst for more information.
 """
 
-import math
-import os
-import re
 import sys
 from collections.abc import Sequence
 from typing import Any, Literal, Optional, Union
 
-try:
-    import termcolor
-
-    HAVE_TERMCOLOR = True
-except ImportError:
-    HAVE_TERMCOLOR = False
-
-
-NumLines = Union[int, Literal["auto"], tuple[int, int]]
-
-blocks = " ▁▂▃▄▅▆▇█"
-# Complement index: blocks[8 - i] gives the upward char whose reverse-video
-# rendering produces a downward bar of height i/8.
-_COMPLEMENT = [8 - i for i in range(9)]
-# Unicode-only fallback for inverted bars when ANSI is suppressed (NO_COLOR etc.).
-# Maps scaled height 0-8 to the closest available top-fill Unicode character.
-_INVERTED_UNICODE = " ▔▔▔▀▀▀▀█"
-
-
-def _ansi_ok() -> bool:
-    """Return True if emitting ANSI escape codes is appropriate.
-
-    Respects NO_COLOR, ANSI_COLORS_DISABLED, and TERM=dumb, but does NOT
-    require a TTY — inverted=True is an explicit opt-in to ANSI output.
-    """
-    if os.environ.get("NO_COLOR") or os.environ.get("ANSI_COLORS_DISABLED"):
-        return False
-    return os.environ.get("TERM") != "dumb"
-
-
-def _inverted_char(v: int, color: Optional[str] = None) -> str:
-    """Return a character representing a downward bar of height v/8.
-
-    When ANSI is available, uses the complement upward block character under
-    reverse video, giving full 8-level resolution. Falls back to the closest
-    top-fill Unicode character (▔/▀/█) when ANSI is suppressed by NO_COLOR,
-    ANSI_COLORS_DISABLED, or TERM=dumb.
-    """
-    if v == 0:
-        return " "
-    if v == 8:
-        if color and HAVE_TERMCOLOR and _ansi_ok():
-            return termcolor.colored("█", color, force_color=True)
-        return "█"
-    if not _ansi_ok():
-        return _INVERTED_UNICODE[v]
-    ch = blocks[_COMPLEMENT[v]]
-    if HAVE_TERMCOLOR:
-        return termcolor.colored(ch, color, attrs=["reverse"], force_color=True)
-    return f"\033[7m{ch}\033[27m"
-
-
-def _check_emphasis(
-    numbers: Sequence[Optional[float]], emph: list[str]
-) -> dict[int, str]:
-    """Find index positions in list of numbers to be emphasized according to emph."""
-    val_pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
-    idx_pat = r"(\w+)\:\[([^\]]*)\]"
-    emphasized: dict[int, str] = {}
-
-    def _int_or_none(s: Optional[str]) -> Optional[int]:
-        return int(s) if s else None
-
-    for em in emph:
-        idx_match = re.fullmatch(idx_pat, em)
-        if idx_match:
-            color, slice_str = idx_match.groups()
-            parts = (slice_str.split(":") + [None, None, None])[:3]
-            sl = slice(
-                _int_or_none(parts[0]), _int_or_none(parts[1]), _int_or_none(parts[2])
-            )
-            for i in range(*sl.indices(len(numbers))):
-                if numbers[i] is not None:
-                    emphasized[i] = color
-            continue
-        for i, n in enumerate(numbers):
-            if n is None:
-                continue
-            match = re.fullmatch(val_pat, em)
-            if match is None:
-                continue
-            color, op, value_str = match.groups()
-            v = float(value_str)
-            ops = {
-                "eq": n == v,
-                "gt": n > v,
-                "ge": n >= v,
-                "lt": n < v,
-                "le": n <= v,
-            }
-            if ops.get(op):
-                emphasized[i] = color
-    return emphasized
-
-
-def scale_values(
-    numbers: Sequence[Optional[float]],
-    num_lines: int = 1,
-    minimum: Optional[float] = None,
-    maximum: Optional[float] = None,
-) -> list[Optional[int]]:
-    """Scale input numbers to appropriate range."""
-    # find min/max values, ignoring Nones
-    filtered = [n for n in numbers if n is not None]
-    min_ = min(filtered) if minimum is None else minimum
-    max_ = max(filtered) if maximum is None else maximum
-    dv = max_ - min_
-
-    # clamp
-    numbers = [max(min(n, max_), min_) if n is not None else None for n in numbers]
-
-    if dv == 0:
-        values = [4 * num_lines if x is not None else None for x in numbers]
-    elif dv > 0:
-        num_blocks = len(blocks) - 1
-
-        min_index = 1.0
-        max_index = num_lines * num_blocks
-
-        values_f = [
-            (
-                ((max_index - min_index) * (x - min_)) / dv + min_index
-                if x is not None
-                else None
-            )
-            for x in numbers
-        ]
-        values = [round(v) or 1 if v is not None else None for v in values_f]
-    return values
-
-
-def proportional(pos_max: float, neg_max: float, i: int, j: int) -> bool:
-    """Return True if row split i:j is exactly proportional to the pos/neg range."""
-    return math.isclose(pos_max * j, neg_max * i, rel_tol=0, abs_tol=1e-9)
-
-
-def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
-    """Return best (up, down) row split approximating proportionality for n rows."""
-    if n == 2:
-        return 1, 1
-    size = pos_max + neg_max
-    ideal_i = n * pos_max / size
-    target_i = round(ideal_i)
-    best_i, best_j = 1, n - 1
-    best_key: Optional[tuple[float, int, float, float]] = None
-    for i in range(1, n):
-        j = n - i
-        imbalance = abs(pos_max * j - neg_max * i)
-        key = (imbalance, abs(i - j), abs(i - ideal_i), abs(i - target_i))
-        if best_key is None or key < best_key:
-            best_key = key
-            best_i, best_j = i, j
-    return best_i, best_j
-
-
-def ideal_num_rows(pos_max: float, neg_max: float) -> int:
-    """Return the smallest total row count that yields an exactly proportional split.
-
-    Falls back to the closest approximation within 10 rows if no exact split exists.
-    """
-    best_n = 2
-    best_imbalance = float("inf")
-    for n in range(2, 101):
-        i, j = allocate_rows(pos_max, neg_max, n)
-        if proportional(pos_max, neg_max, i, j):
-            return n
-        imbalance = abs(pos_max * j - neg_max * i)
-        if imbalance < best_imbalance and n <= 10:
-            best_imbalance = imbalance
-            best_n = n
-    return best_n
-
-
-def resolve_mixed_rows(
-    num_lines: NumLines, pos_max: float, neg_max: float
-) -> tuple[int, int]:
-    """Resolve a NumLines spec into a concrete (up_rows, down_rows) pair."""
-    if isinstance(num_lines, tuple):
-        return num_lines
-    n = ideal_num_rows(pos_max, neg_max) if num_lines == "auto" else max(num_lines, 2)
-    return allocate_rows(pos_max, neg_max, n)
-
-
-def _resolve_nl(num_lines: NumLines, side: Literal["pos", "neg"]) -> int:
-    """Resolve NumLines to a concrete row count for one side of a non-split render."""
-    if num_lines == "auto":
-        return 1
-    if isinstance(num_lines, tuple):
-        return num_lines[0] if side == "pos" else num_lines[1]
-    return num_lines
-
-
-def _render_row(
-    row_values: list[Optional[int]],
-    point_base: int,
-    inverted: bool,
-    emphasized: dict[int, str],
-) -> str:
-    """Render one horizontal row of scaled bar values to a string."""
-    if inverted:
-        return "".join(
-            (
-                _inverted_char(
-                    v,
-                    emphasized.get(point_base + i)
-                    if HAVE_TERMCOLOR and emphasized
-                    else None,
-                )
-                if v is not None
-                else " "
-            )
-            for i, v in enumerate(row_values)
-        )
-    if HAVE_TERMCOLOR and emphasized:
-        return "".join(
-            (
-                termcolor.colored(
-                    blocks[int(v)], emphasized.get(point_base + i, "white")
-                )
-                if v is not None
-                else " "
-            )
-            for i, v in enumerate(row_values)
-        )
-    return "".join(blocks[int(v)] if v is not None else " " for v in row_values)
-
-
-def _render_series(
-    numbers: Sequence[Optional[float]],
-    num_lines: int = 1,
-    emph: Optional[list[str]] = None,
-    emphasized: Optional[dict[int, str]] = None,
-    minimum: Optional[float] = None,
-    maximum: Optional[float] = None,
-    wrap: Optional[int] = None,
-    inverted: bool = False,
-) -> list[str]:
-    """Render a sequence of scaled numbers as a list of sparkline strings."""
-    if inverted:
-        numbers = [abs(v) if v is not None and v < 0 else v for v in numbers]
-
-    values = scale_values(
-        numbers, num_lines=num_lines, minimum=minimum, maximum=maximum
-    )
-
-    if emphasized is None:
-        emphasized = _check_emphasis(numbers, emph) if emph else {}
-
-    point_index = 0
-    subgraphs = []
-    for batch_values in batch(wrap, values):
-        remaining: list[Optional[int]] = list(batch_values)
-        multi_values = []
-        for _ in range(num_lines):
-            multi_values.append(
-                [min(v, 8) if v is not None else None for v in remaining]
-            )
-            remaining = [max(0, v - 8) if v is not None else None for v in remaining]
-        if not inverted:
-            multi_values.reverse()
-        lines = [
-            _render_row(row_values, point_index, inverted, emphasized)
-            for row_values in multi_values
-        ]
-        subgraphs.append(lines)
-        point_index += len(batch_values)
-
-    return list_join("", subgraphs)
-
-
-def _partition_series(
-    numbers: Sequence[Optional[float]],
-    zero: Literal["up", "none"],
-) -> tuple[list[Optional[float]], list[Optional[float]], float, float]:
-    """Split numbers into (pos_series, neg_series, pos_max, neg_max)."""
-    if zero == "up":
-        pos: list[Optional[float]] = [
-            v if v is not None and v >= 0 else None for v in numbers
-        ]
-    else:
-        pos = [v if v is not None and v > 0 else None for v in numbers]
-    neg: list[Optional[float]] = [
-        abs(v) if v is not None and v < 0 else None for v in numbers
-    ]
-    pos_max = max((v for v in pos if v is not None), default=0.0)
-    neg_max = max((v for v in neg if v is not None), default=0.0)
-    return pos, neg, pos_max, neg_max
-
-
-def _render_split(
-    numbers: Sequence[Optional[float]],
-    num_lines: NumLines,
-    emph: Optional[list[str]],
-    wrap: Optional[int],
-    zero: Literal["up", "none"],
-) -> list[str]:
-    """Render mixed positive/negative data as stacked up/down sparkline rows."""
-    pos, neg, pos_max, neg_max = _partition_series(numbers, zero)
-    up_rows, down_rows = resolve_mixed_rows(num_lines, pos_max, neg_max)
-
-    if isinstance(num_lines, tuple):
-        pos_M, neg_M = pos_max, neg_max
-    else:
-        shared = max(pos_max, neg_max)
-        pos_M = neg_M = shared
-
-    emphasized = _check_emphasis(numbers, emph) if emph else {}
-
-    # Scale globally so all windows share the same scale.
-    pos_scaled = scale_values(pos, num_lines=up_rows, minimum=0.0, maximum=pos_M)
-    neg_scaled = scale_values(neg, num_lines=down_rows, minimum=0.0, maximum=neg_M)
-
-    def _multi(scaled: list[Optional[int]], n: int) -> list[list[Optional[int]]]:
-        remaining = list(scaled)
-        rows = []
-        for _ in range(n):
-            rows.append([min(v, 8) if v is not None else None for v in remaining])
-            remaining = [max(0, v - 8) if v is not None else None for v in remaining]
-        return rows
-
-    subgraphs = []
-    point_index = 0
-    for pos_win, neg_win in zip(batch(wrap, pos_scaled), batch(wrap, neg_scaled)):
-        pos_rows = list(reversed(_multi(pos_win, up_rows)))
-        neg_rows = _multi(neg_win, down_rows)
-        lines = [
-            _render_row(row, point_index, False, emphasized) for row in pos_rows
-        ] + [_render_row(row, point_index, True, emphasized) for row in neg_rows]
-        subgraphs.append(lines)
-        point_index += len(pos_win)
-
-    return list_join("", subgraphs)
+from sparklines.ansi import (  # noqa: F401
+    HAVE_TERMCOLOR,
+    _COMPLEMENT,
+    _INVERTED_UNICODE,
+    _ansi_ok,
+    _inverted_char,
+    blocks,
+)
+from sparklines.emphasis import _check_emphasis  # noqa: F401
+from sparklines.render import (  # noqa: F401
+    _partition_series,
+    _render_row,
+    _render_series,
+    _render_split,
+)
+from sparklines.rows import (  # noqa: F401
+    NumLines,
+    _resolve_nl,
+    allocate_rows,
+    ideal_num_rows,
+    proportional,
+    resolve_mixed_rows,
+)
+from sparklines.scale import batch, list_join, scale_values  # noqa: F401
 
 
 def _validate_num_lines(num_lines: NumLines) -> None:
@@ -425,29 +114,6 @@ def sparklines(
     )
 
 
-def batch(batch_size: Optional[int], items: Sequence[Any]) -> list[list[Any]]:
-    """Batch items into groups of batch_size."""
-    items = list(items)
-    if batch_size is None:
-        return [items]
-    MISSING = object()
-    padded_items = items + [MISSING] * (batch_size - 1)
-    groups = zip(*[padded_items[i::batch_size] for i in range(batch_size)])
-    return [[item for item in group if item != MISSING] for group in groups]
-
-
-def list_join(separator: str, lists: list[list[Any]]) -> list[Any]:
-    """Join a list of lists with separator items between each sublist."""
-    result = []
-    for lst, _next in zip(lists[:], lists[1:]):
-        result.extend(lst)
-        result.append(separator)
-
-    if lists:
-        result.extend(lists[-1])
-    return result
-
-
 def _demo_lines(nums: list[Optional[float]]) -> list[str]:
     """Generate demo output lines without incremental list appending."""
 
@@ -529,3 +195,23 @@ def demo(nums: Optional[list[Optional[float]]] = None) -> str:
         nums = []
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
     return "\n".join(_demo_lines(nums)) + "\n"
+
+
+# Suppress unused-import warnings for re-exported names consumed via star import.
+__all__ = [
+    "Any",
+    "HAVE_TERMCOLOR",
+    "NumLines",
+    "Union",
+    "_check_emphasis",
+    "allocate_rows",
+    "batch",
+    "blocks",
+    "demo",
+    "ideal_num_rows",
+    "list_join",
+    "proportional",
+    "resolve_mixed_rows",
+    "scale_values",
+    "sparklines",
+]

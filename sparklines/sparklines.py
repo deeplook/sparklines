@@ -226,6 +226,7 @@ def _render_series(
     numbers: Sequence[Optional[float]],
     num_lines: int = 1,
     emph: Optional[list[str]] = None,
+    emphasized: Optional[dict[int, str]] = None,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
     wrap: Optional[int] = None,
@@ -239,7 +240,8 @@ def _render_series(
         numbers, num_lines=num_lines, minimum=minimum, maximum=maximum
     )
 
-    emphasized = _check_emphasis(numbers, emph) if emph else {}
+    if emphasized is None:
+        emphasized = _check_emphasis(numbers, emph) if emph else {}
 
     point_index = 0
     subgraphs = []
@@ -299,10 +301,12 @@ def _render_split(
         shared = max(pos_max, neg_max)
         pos_M = neg_M = shared
 
+    emphasized = _check_emphasis(numbers, emph) if emph else {}
+
     pos_lines = _render_series(
         pos,
         up_rows,
-        emph=emph,
+        emphasized=emphasized,
         minimum=0.0,
         maximum=pos_M,
         wrap=wrap,
@@ -310,7 +314,7 @@ def _render_split(
     neg_lines = _render_series(
         neg,
         down_rows,
-        emph=emph,
+        emphasized=emphasized,
         minimum=0.0,
         maximum=neg_M,
         wrap=wrap,
@@ -393,10 +397,10 @@ def sparklines(
     return _render_series(
         numbers,
         _resolve_nl(num_lines, "pos"),
-        emph,
-        minimum,
-        maximum,
-        wrap,
+        emph=emph,
+        minimum=minimum,
+        maximum=maximum,
+        wrap=wrap,
     )
 
 

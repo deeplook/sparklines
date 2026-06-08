@@ -281,9 +281,8 @@ def test_inverted_with_emph() -> None:
     """Test that colour emphasis applies correctly to inverted bars."""
     res = sparklines([1, 5, -9], emph=["red:ge:5"])
     assert len(res) == 2
-    # Bottom row: -9 → abs → 9, satisfies red:ge:5, full block → colored without
-    # reverse video (v==8 uses force_color=True so ANSI is present regardless of TTY)
-    assert "\x1b[" in res[1]
+    # -9 does not satisfy red:ge:5 against original values → no ANSI in neg row
+    assert "\x1b[" not in res[1]
 
 
 def test_inverted_with_explicit_range() -> None:

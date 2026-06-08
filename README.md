@@ -26,17 +26,6 @@ A recorded demo session — click the image to play it on [Asciinema]:
 
 [![asciicast](https://asciinema.org/a/gXARhhEIskCsI4Xz.svg)](https://asciinema.org/a/gXARhhEIskCsI4Xz)
 
-```bash
-$ sparklines 2 7 1 8 2 8 1 8
-▂▇▁█▂█▁█
-$ echo 2 7 1 8 2 8 1 8 | sparklines
-▂▇▁█▂█▁█
-$ sparklines < numbers.txt
-▂▇▁█▂█▁█
-$ sparklines 0 2. 1e0
-▁█▅
-```
-
 
 ## Installation
 
@@ -150,7 +139,7 @@ $ sparklines --zero none 0 1 2 -1 -2 0
 Downward bars use ANSI reverse video for full 8-level resolution. Falls back to `▔▀█` when `NO_COLOR`, `ANSI_COLORS_DISABLED`, or `TERM=dumb` is set.
 
 
-References
+## References
 
 Inspired by Zach Holman's [spark](https://github.com/holman/spark), with prior Python ports by Kenneth Reitz ([spark.py](https://raw.githubusercontent.com/kennethreitz/spark.py/master/spark.py)), RedKrieg ([pysparklines](https://github.com/RedKrieg/pysparklines)), and Roger Allen ([shorter spark.py](https://gist.githubusercontent.com/rogerallen/1368454/raw/b17e96b56ae881621a9f3b1508ca2e7fde3ec93e/spark.py)).
 

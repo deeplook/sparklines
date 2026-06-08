@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """CLI entry point for the sparklines program."""
 
 import argparse

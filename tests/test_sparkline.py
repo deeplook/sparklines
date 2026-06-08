@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """Run from the repo root with: pytest tests."""
 
 import os

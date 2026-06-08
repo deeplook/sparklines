@@ -4,6 +4,7 @@ import os
 import re
 from pathlib import Path
 import sys
+from typing import Optional
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -303,7 +304,7 @@ def test_emph_by_index_skips_none() -> None:
     """Test that index-slice emphasis skips None gaps."""
     from sparklines.sparklines import _check_emphasis
 
-    data: list[float | None] = [1.0, None, 3.0]
+    data: list[Optional[float]] = [1.0, None, 3.0]
     assert _check_emphasis(data, ["red:[:]"]) == {0: "red", 2: "red"}
 
 

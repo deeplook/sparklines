@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "sparklines"
 version = "1.0.0"
 description = "Generate sparklines for numbers using Unicode characters only."
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 license-files = ["LICENSE.txt"]
@@ -36,14 +36,19 @@ classifiers = [
 [project.optional-dependencies]
 test = [
     "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
     "tomli>=2.0.0; python_version < '3.11'",
+]
+dev = [
+    "mypy>=1.0",
+    "pre-commit>=3.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/deeplook/sparklines"
 Issues = "https://github.com/deeplook/sparklines/issues"
 CI = "https://github.com/deeplook/sparklines/actions"
-Changelog = "https://github.com/deeplook/sparklines/releases"
+Changelog = "https://github.com/deeplook/sparklines/blob/main/CHANGELOG.md"
 Repository = "https://github.com/deeplook/sparklines.git"
 Documentation = "https://github.com/deeplook/sparklines"
 
@@ -52,3 +57,20 @@ sparklines = "sparklines.__main__:main"
 
 [tool.ruff]
 target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "UP", "B", "C4", "SIM", "C90", "D", "PERF", "FIX", "TD"]
+ignore = [
+    "D213",   # conflicts with D212 (summary on first line, our convention)
+    "D203",   # conflicts with D211 (no blank line before class)
+    "D401",   # imperative mood — overly strict
+    "D407",   # missing dashed underline after section — Google style, not ours
+    "D406",   # section name should end with newline — Google style, not ours
+    "D413",   # missing blank line after last section — handled by D412
+    "TD002",  # missing TODO author — overly strict
+    "TD003",  # missing TODO issue link — overly strict
+    "FIX002", # line contains TODO — we allow TODOs, just want them visible
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20  # scale_values is intentionally dense; alert on anything worse

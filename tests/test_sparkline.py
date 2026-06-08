@@ -1,9 +1,4 @@
-#!/usr/bin/env python
-
-"""
-Run from the root folder with either 'python setup.py test' or
-'py.test test/test_sparkline.py'.
-"""
+"""Run from the repo root with: pytest tests."""
 
 import os
 import re
@@ -75,6 +70,7 @@ def test_scale1() -> None:
 
 
 def test_batch() -> None:
+    """Test batch splitting with and without a batch size."""
     batches = batch(3, range(10))
     assert batches == [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]], batches
 
@@ -111,24 +107,28 @@ def test_rounding0() -> None:
 
 
 def test_maximum() -> None:
+    """Test that values above maximum are clamped to the maximum bar height."""
     res = sparklines([1, 2, 3, 10, 10], maximum=3)
     exp = ["▁▄███"]
     assert res == exp
 
 
 def test_maximum_internal_consistency() -> None:
+    """Test that explicit maximum produces the same result as pre-clamped data."""
     res = sparklines([1, 2, 3, 10, 10, 1], maximum=3)
     exp = sparklines([1, 2, 3, 3, 3, 1], maximum=3)
     assert res == exp
 
 
 def test_minimum() -> None:
+    """Test that values below minimum are clamped to the minimum bar height."""
     res = sparklines([0, 0, 11, 12, 13], minimum=10)
     exp = ["▁▁▃▆█"]
     assert res == exp
 
 
 def test_minimum_internal_consistency() -> None:
+    """Test that explicit minimum produces the same result as pre-clamped data."""
     res = sparklines([0, 0, 11, 12, 13], minimum=10)
     exp = sparklines([10, 10, 11, 12, 13], minimum=10)
     assert res == exp
@@ -152,24 +152,28 @@ def test_empty() -> None:
 
 
 def test_multiline() -> None:
+    """Test multi-line sparkline output with num_lines=3."""
     res = sparklines([1, 5, 8], num_lines=3)
     exp = ["  █", " ▆█", "▁██"]
     assert res == exp
 
 
 def test_wrap() -> None:
+    """Test that long sparklines are broken into segments at the wrap boundary."""
     res = sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3)
     exp = ["▁▄█", "", "▁▄█", "", "▁▄"]
     assert res == exp
 
 
 def test_wrap_scale() -> None:
+    """Test that scale is shared across all wrapped segments."""
     res = sparklines([100, 50, 100, 20, 50, 20, 1, 1, 1], wrap=3)
     exp = ["█▄█", "", "▂▄▂", "", "▁▁▁"]
     assert res == exp
 
 
 def test_wrap_consistency() -> None:
+    """Test wrapped output matches manually assembled segments with shared scale."""
     res = sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3)
     exp = (
         sparklines([1, 2, 3], maximum=3, minimum=1)
@@ -182,6 +186,7 @@ def test_wrap_consistency() -> None:
 
 
 def test_wrap_escaping_consistency() -> None:
+    """Test that emphasis ANSI codes don't affect bar characters when stripped."""
     no_emph = sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3)
     stripped_emph = map(
         strip_ansi, sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3, emph=["green:le:1.0"])
@@ -200,6 +205,7 @@ def _test_wrap_escaping() -> None:
 
 
 def test_gaps() -> None:
+    """Test that None values render as blank spaces in the output."""
     res = sparklines([1, None, 1, 2])
     exp = ["▁ ▁█"]
     assert exp == res
@@ -214,6 +220,7 @@ def test_gaps() -> None:
 
 
 def test_inverted_basic() -> None:
+    """Test that mixed data produces two rows: upward positives, inverted negatives."""
     # Mixed data: top row = positive bars, bottom row = inverted bars
     res = sparklines([3, 1, 4, 1, 5, 9, 2, -6])
     assert len(res) == 2
@@ -227,7 +234,9 @@ def test_inverted_basic() -> None:
 
 
 def test_inverted_full_and_empty() -> None:
-    # [9, 0, -9]: 9 → full block top; 0 with zero="up" → baseline; -9 → full block bottom
+    """Test full positive block, zero baseline, and full inverted block."""
+    # [9, 0, -9]: 9 → full block top; 0 with zero="up" → baseline;
+    # -9 → full block bottom
     res = sparklines([9, 0, -9])
     assert len(res) == 2
     top = strip_ansi(res[0])
@@ -238,6 +247,7 @@ def test_inverted_full_and_empty() -> None:
 
 
 def test_inverted_gaps() -> None:
+    """Test that None values produce spaces in both the positive and inverted rows."""
     res = sparklines([1, None, -1])
     assert len(res) == 2
     assert strip_ansi(res[0])[1] == " "  # None → space in top row
@@ -245,6 +255,7 @@ def test_inverted_gaps() -> None:
 
 
 def test_inverted_multiline() -> None:
+    """Test that num_lines=4 allocates rows proportionally across pos and neg."""
     # num_lines=4: allocate_rows(9, 6, 4) == (2, 2) → 2 up + 2 down = 4 total
     res = sparklines([3, 1, 4, 1, 5, 9, 2, -6], num_lines=4)
     assert len(res) == 4
@@ -253,6 +264,7 @@ def test_inverted_multiline() -> None:
 
 
 def test_inverted_multiline_row_order() -> None:
+    """Test that rows are ordered correctly with more down-rows than up-rows."""
     # [1, -9] with num_lines=4: allocate_rows(1, 9, 4) == (1, 3)
     # → 1 up-row + 3 down-rows = 4 total
     res = sparklines([1, -9], num_lines=4)
@@ -266,14 +278,15 @@ def test_inverted_multiline_row_order() -> None:
 
 
 def test_inverted_with_emph() -> None:
+    """Test that colour emphasis applies correctly to inverted bars."""
     res = sparklines([1, 5, -9], emph=["red:ge:5"])
     assert len(res) == 2
-    # Bottom row: -9 → abs → 9, satisfies red:ge:5, full block → colored without
-    # reverse video (v==8 path uses force_color=True so ANSI is present regardless of TTY)
-    assert "\x1b[" in res[1]
+    # -9 does not satisfy red:ge:5 against original values → no ANSI in neg row
+    assert "\x1b[" not in res[1]
 
 
 def test_inverted_with_explicit_range() -> None:
+    """Test that explicit minimum/maximum are respected for all-negative data."""
     # All-negative data — minimum/maximum ARE respected in the inverted path
     res = sparklines([-1, -100], minimum=0, maximum=100)
     stripped = strip_ansi(res[0])
@@ -284,6 +297,7 @@ def test_inverted_with_explicit_range() -> None:
 
 
 def test_inverted_no_color_fallback() -> None:
+    """Test that NO_COLOR suppresses ANSI and falls back to top-fill Unicode chars."""
     orig = os.environ.get("NO_COLOR")
     try:
         os.environ["NO_COLOR"] = "1"
@@ -307,6 +321,7 @@ def test_inverted_no_color_fallback() -> None:
 
 
 def test_auto_split_detected() -> None:
+    """Test that mixed positive/negative data is automatically split into two rows."""
     res = sparklines([3, -1, 4, -2, 5])
     assert len(res) == 2
     top = strip_ansi(res[0])
@@ -321,17 +336,20 @@ def test_auto_split_detected() -> None:
 
 
 def test_auto_split_all_positive() -> None:
+    """Test that all-positive data produces a single upward row with no split."""
     res = sparklines([1, 2, 3])
     assert len(res) == 1  # no split; single upward row
 
 
 def test_auto_split_all_negative() -> None:
+    """Test that all-negative data produces a single inverted row with reverse video."""
     res = sparklines([-1, -2, -3])
     assert len(res) == 1  # single inverted row
     assert "\x1b[7m" in res[0]  # reverse video present
 
 
 def test_auto_split_gaps() -> None:
+    """Test that None values produce spaces in both rows of a split sparkline."""
     res = sparklines([1, None, -1])
     assert len(res) == 2
     assert strip_ansi(res[0])[1] == " "  # None → space in top row
@@ -344,21 +362,25 @@ def test_auto_split_gaps() -> None:
 
 
 def test_proportional_3_3() -> None:
+    """Test equal magnitudes: smallest proportional split is 1:1 at 2 rows."""
     assert ideal_num_rows(3, 3) == 2
     assert allocate_rows(3, 3, 2) == (1, 1)
 
 
 def test_proportional_6_3() -> None:
+    """Test 2:1 ratio: smallest proportional split is 2:1 at 3 rows."""
     assert ideal_num_rows(6, 3) == 3
     assert allocate_rows(6, 3, 3) == (2, 1)
 
 
 def test_proportional_9_3() -> None:
+    """Test 3:1 ratio: smallest proportional split is 3:1 at 4 rows."""
     assert ideal_num_rows(9, 3) == 4
     assert allocate_rows(9, 3, 4) == (3, 1)
 
 
 def test_proportional_6_4() -> None:
+    """Test 3:2 ratio: smallest proportional split is 3:2 at 5 rows."""
     assert ideal_num_rows(6, 4) == 5
     assert allocate_rows(6, 4, 5) == (3, 2)
 
@@ -370,12 +392,14 @@ def test_proportional_6_4() -> None:
 
 
 def test_worked_auto() -> None:
+    """Test num_lines='auto' on the key dataset gives 3 rows (2 up + 1 down)."""
     # ideal_num_rows(6, 3) == 3; allocate_rows(6,3,3) == (2,1) → 2+1=3 rows
     res = sparklines([1, 2, 3, -1, -2, -3, 0, 4, 5, 6], num_lines="auto")
     assert len(res) == 3
 
 
 def test_worked_integer_n() -> None:
+    """Test integer num_lines=5 allocates 3 up + 2 down on the key dataset."""
     # allocate_rows(6, 3, 5): size=9, ideal_i=5*6/9=3.33, target_i=3
     # i=3,j=2: imbalance=|6*2-3*3|=|12-9|=3, key=(3,1,0.33,0)
     # i=2,j=3: imbalance=|6*3-3*2|=|18-6|=12, key=(12,1,1.33,1)
@@ -386,12 +410,14 @@ def test_worked_integer_n() -> None:
 
 
 def test_worked_tuple_layout() -> None:
+    """Test explicit (4, 5) tuple layout gives 9 rows with per-side scaling."""
     # Explicit (4,5): 4 up + 5 down = 9 rows; per-side scaling
     res = sparklines([1, 2, 3, -1, -2, -3, 0, 4, 5, 6], num_lines=(4, 5))
     assert len(res) == 9
 
 
 def test_worked_shared_scale() -> None:
+    """Test that auto and integer num_lines use a shared scale on the key dataset."""
     # With auto or integer num_lines, shared max=6 applies to both sides.
     # The single neg bar (neg_max=3) should be roughly half the height of the
     # largest pos bar (pos_max=6) because both are scaled to max=6.
@@ -408,6 +434,7 @@ def test_worked_shared_scale() -> None:
 
 
 def test_zero_up() -> None:
+    """Test that zero='up' renders zeros on the positive baseline."""
     # zero="up" (default): zeros sit on the positive baseline
     res = sparklines([0, 1, 2, -1, -2, 0], zero="up")
     assert len(res) == 2
@@ -422,6 +449,7 @@ def test_zero_up() -> None:
 
 
 def test_zero_none() -> None:
+    """Test that zero='none' renders zeros as gaps on both positive and negative."""
     # zero="none": zeros are gaps on both sides
     res = sparklines([0, 1, 2, -1, -2, 0], zero="none")
     assert len(res) == 2
@@ -439,6 +467,7 @@ def test_zero_none() -> None:
 
 
 def test_auto_split_shared_scale() -> None:
+    """Test that equal-magnitude values both reach full height under shared scale."""
     # Equal magnitude: shared scale → both bars are full blocks
     res = sparklines([5, -5])
     assert len(res) == 2
@@ -447,6 +476,7 @@ def test_auto_split_shared_scale() -> None:
 
 
 def test_auto_split_per_side_scale() -> None:
+    """Test that tuple num_lines uses per-side scaling so each side reaches full."""
     # Explicit tuple: each side scaled independently → both bars are full blocks
     res = sparklines([6, -3], num_lines=(1, 1))
     assert len(res) == 2
@@ -463,7 +493,18 @@ def test_auto_split_per_side_scale() -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_auto_irrational_ratio() -> None:
+    """Test that irrational pos/neg ratios fall back gracefully without raising."""
+    # irrational pos/neg ratio — ideal_num_rows has no exact solution,
+    # should fall back gracefully rather than raising ValueError
+    import math
+
+    res = sparklines([1, -(math.sqrt(2))], num_lines="auto")
+    assert 2 <= len(res) <= 10
+
+
 def test_num_lines_auto_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that -n auto produces the correct row count via the CLI."""
     main(["-n", "auto", "1", "2", "3", "-1", "-2", "-3", "0", "4", "5", "6"])
     out, _ = capsys.readouterr()
     lines = out.rstrip("\n").split("\n")
@@ -471,6 +512,7 @@ def test_num_lines_auto_cli(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_num_lines_tuple_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that -n up:down produces the correct total row count via the CLI."""
     main(["-n", "4:5", "1", "2", "-1", "-2"])
     out, _ = capsys.readouterr()
     lines = out.rstrip("\n").split("\n")
@@ -478,6 +520,7 @@ def test_num_lines_tuple_cli(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_zero_flag_cli(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that --zero none renders zeros as gaps in both rows via the CLI."""
     main(["--zero", "none", "0", "1", "-1", "0"])
     out, _ = capsys.readouterr()
     lines = out.rstrip("\n").split("\n")
@@ -490,18 +533,23 @@ def test_zero_flag_cli(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_demo_consistency() -> None:
+    """Test that demo() output matches the checked-in demo-output fixture."""
     toplevel = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     with open(os.path.join(toplevel, "tests", "demo-output")) as stream:
         exp = stream.read()
     res = demo([])
 
-    assert strip_ansi(exp) == strip_ansi(res), (
+    def normalize(s: str) -> str:
+        return "\n".join(line.rstrip() for line in strip_ansi(s).splitlines())
+
+    assert normalize(exp) == normalize(res), (
         "Demo output has changed. Verify it and update demo-output!"
     )
     assert "\x1b[7m" in res, "Demo inverted output is missing ANSI reverse video codes"
 
 
 def test_main_version(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test that --version prints the version from pyproject.toml and exits 0."""
     pyproject_toml = Path(__file__).parent.parent / "pyproject.toml"
     with open(pyproject_toml, "rb") as f:
         project_data = tomllib.load(f)

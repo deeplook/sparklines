@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sparklines"
-version = "0.7.0"
+version = "1.0.0"
 description = "Generate sparklines for numbers using Unicode characters only."
 readme = "README.rst"
 requires-python = ">=3.9"

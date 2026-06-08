@@ -40,13 +40,15 @@ plausibility tests in sensor networks as shown in fig. 1 below:
    Fig. 1: Example usecase for such "sparklines" on the command-line,
    showing IoT sensor values (generating code not included here).
 
-Due to limitations of available Unicode characters this works best when all
-values are positive. And even then true sparklines that look more like lines
-and less like bars are a real challenge, because they would need multiple
-characters with a single horizontal line on different vertical positions. This
-would work only with a dedicated font, which is way beyond the scope of this
-tool and which would significantly complicate its usage. So we stick to these
-characters: "▁▂▃▄▅▆▇█", and use a blank for missing values.
+This works best when all values are positive, though negative values are
+fully supported: mixed data auto-splits into two rows, all-negative data
+renders as inverted (downward) bars (see `Mixed and negative datasets`_ below). True
+sparklines that look more like lines and less like bars are a real challenge,
+because they would need multiple characters with a single horizontal line on
+different vertical positions. This would work only with a dedicated font,
+which is way beyond the scope of this tool and which would significantly
+complicate its usage. So we stick to these characters: "▁▂▃▄▅▆▇█", and use a
+blank for missing values.
 
 Sample output
 -------------
@@ -180,7 +182,7 @@ Programmatic
 ............
 
 And here are sample invocations from interactive Python sessions, copied into
-this README. The main function to use programmatically is 
+this README. The main function to use programmatically is
 ``sparklines.sparklines()``:
 
 .. code-block:: python
@@ -189,14 +191,68 @@ this README. The main function to use programmatically is
 
     In [2]: for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1]):
        ...:     print(line)
-       ...:     
+       ...:
     ▁▃▅▆█ ▅▃▁
 
     In [3]: for line in sparklines([1, 2, 3, 4, 5.0, None, 3, 2, 1], num_lines=2):
        ...:     print(line)
-       ...:     
-      ▁▅█ ▁  
+       ...:
+      ▁▅█ ▁
     ▁▅███ █▅▁
+
+
+.. _Mixed and negative datasets:
+
+Mixed and negative datasets
+...........................
+
+When your data contains both positive and negative values, ``sparklines``
+automatically renders a proportional split: upward bars for positives on top,
+downward bars for negatives below. No flags needed:
+
+.. code-block:: python
+
+    In [1]: from sparklines import sparklines
+
+    In [2]: data = [50, 30, 80, -20, -60, -10, 40, 10]
+       ...: for line in sparklines(data):
+       ...:     print(line)
+       ...:
+    ▅▃█   █▁
+       ▂▆▁
+
+All-negative data is rendered automatically as inverted (downward) bars.
+
+**Row count: -n / --num-lines**
+
+The ``-n`` argument accepts three forms:
+
+- Integer (default ``1``): total rows, split proportionally between positive
+  and negative halves. Both halves share a common scale maximum.
+- ``auto``: smallest total row count that gives a true proportional split
+  (``pos_rows / total == pos_max / range``).
+- ``up:down`` (e.g. ``2:1``): explicit per-side layout; each half is scaled
+  independently to its own maximum.
+
+.. code-block:: console
+
+    $ sparklines -n auto 1 2 3 -1 -2 -3 0 4 5 6
+    $ sparklines -n 2:1  1 2 3 -1 -2 -3 0 4 5 6
+
+**Zero handling: --zero**
+
+- ``--zero up`` (default): zeros sit on the positive baseline.
+- ``--zero none``: zeros are rendered as gaps on both sides.
+
+.. code-block:: console
+
+    $ sparklines --zero up   0 1 2 -1 -2 0
+    $ sparklines --zero none 0 1 2 -1 -2 0
+
+Downward bars use ANSI reverse video with the complement block character for
+full 8-level resolution, matching upward bars. When ``NO_COLOR``,
+``ANSI_COLORS_DISABLED``, or ``TERM=dumb`` is set, they fall back to top-fill
+Unicode characters (``▔▀█``) at reduced resolution.
 
 
 References
@@ -215,7 +271,11 @@ extra features I was missing, like:
 
 - increasing resolution with multiple output lines per sparkline
 - showing gaps in input numbers for missing data
-- issuing warnings for negative values (allowed, but misleading)
+- automatic split rendering for mixed positive/negative datasets (no flags needed)
+- all-negative data rendered as inverted (downward) bars automatically
+- proportional row allocation (``-n auto``) keeps the zero line meaningful
+- explicit per-side layout with ``-n up:down`` and independent scaling
+- zero handling via ``--zero up`` (baseline) or ``--zero none`` (gap)
 - highlighting values exceeding some threshold with a different color
 - wrapping long sparklines at some max. length
 - (todo) adding separator characters like ``:`` at regular intervals

@@ -124,8 +124,8 @@ from sparklines import sparklines
 data = [50, 30, 80, -20, -60, -10, 40, 10]
 for line in sparklines(data):
     print(line)
-# ▅▃█   █▁
-#    ▂▆▁
+# ▅▄█   ▄▂
+#    ▔▀▔
 ```
 
 All-negative data renders as inverted (downward) bars automatically.
@@ -140,14 +140,24 @@ All-negative data renders as inverted (downward) bars automatically.
 
 ```console
 $ sparklines -n auto 1 2 3 -1 -2 -3 0 4 5 6
+       ▃▆█
+▄▆█   ▁███
+   ▔▔▀
 $ sparklines -n 2:1  1 2 3 -1 -2 -3 0 4 5 6
+       ▃▆█
+▄▆█   ▁███
+   ▔▀█
 ```
 
 **`--zero`**: `up` (default) places zeros on the positive baseline; `none` renders them as gaps.
 
 ```console
 $ sparklines --zero up   0 1 2 -1 -2 0
+▁▄█  ▁
+   ▀█
 $ sparklines --zero none 0 1 2 -1 -2 0
+ ▄█
+   ▀█
 ```
 
 Downward bars use ANSI reverse video for full 8-level resolution. Falls back to `▔▀█` when `NO_COLOR`, `ANSI_COLORS_DISABLED`, or `TERM=dumb` is set.

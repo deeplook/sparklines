@@ -3,7 +3,7 @@
 > **Note:** Not all versions listed here were published as GitHub releases.
 > PyPI remains the authoritative source for all released versions.
 
-## 1.0.0 — Tenth release (breaking changes)
+## 1.0.0 — Breaking changes
 
 - Mixed positive/negative data is now auto-detected and rendered as a
   proportional split sparkline automatically — no flags required. Upward bars
@@ -35,11 +35,11 @@
   the positive and negative rows per window, rather than emitting all positive
   windows followed by all negative windows.
 
-## 0.7.0 — Eighth release
+## 0.7.0
 
 - Changed license from GPL to MIT starting with version 0.7.0
 
-## 0.6.0 — Seventh release
+## 0.6.0
 
 - Move from setup.py and setup.cfg to pyproject.toml
 - Add workflow for test releases on test.pypi.org
@@ -47,23 +47,23 @@
 - Add type annotations
 - Drop support for Python 3.8
 
-## 0.5.0 — Sixth release
+## 0.5.0
 
 - Dropped Python 2 support
 - Replaced Travis build with GitHub build action
 - Removed minified pytest code
 - Added a fix regarding regex for Python 3.12
 
-## 0.4.2 — Fifth release
+## 0.4.2
 
 - Fixed a buglet preventing pip install without future already installed
 
-## 0.4.1 — Fourth release
+## 0.4.1
 
 - Improved command-line option -e/--emphasize to take only one argument,
   but can be used repeatedly now, which reduces unexpected behaviour
 
-## 0.4.0 — Third release
+## 0.4.0
 
 - Made rounding consistent across Python 2 and 3 (bankers' rounding)
 - Added future dependency for this kind of rounding in Python 2
@@ -72,12 +72,12 @@
 - Added more tests
 - Added asciicast to README
 
-## 0.3.0 — Second release
+## 0.3.0
 
 - Removed typos related to singular/plural forms of "sparkline/s"
 - Added color emphasis in output using "termcolor" package (if present)
 
-## 0.2.0 — First released version
+## 0.2.0
 
 - Increased resolution with multiple output lines per sparkline
 - Show gaps in input numbers for missing data
@@ -85,4 +85,4 @@
 - Tested on Python 2 and 3
 - Packaged code
 
-## 0.1.0 — Initial version (unreleased)
+## 0.1.0 — unreleased

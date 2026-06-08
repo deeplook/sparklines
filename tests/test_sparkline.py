@@ -463,6 +463,15 @@ def test_auto_split_per_side_scale() -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_auto_irrational_ratio() -> None:
+    # irrational pos/neg ratio — ideal_num_rows has no exact solution,
+    # should fall back gracefully rather than raising ValueError
+    import math
+
+    res = sparklines([1, -(math.sqrt(2))], num_lines="auto")
+    assert 2 <= len(res) <= 10
+
+
 def test_num_lines_auto_cli(capsys: pytest.CaptureFixture[str]) -> None:
     main(["-n", "auto", "1", "2", "3", "-1", "-2", "-3", "0", "4", "5", "6"])
     out, _ = capsys.readouterr()

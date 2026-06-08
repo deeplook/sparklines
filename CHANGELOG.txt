@@ -64,6 +64,8 @@
   'none' omits zeros from both sides.
 - Removed inverted=True / -i/--inverted and split=True / -s/--split from the
   public API. Inverted rendering is now an internal implementation detail.
+- Removed -v/--verbose CLI flag and verbose= parameter (were no-ops since
+  introduction; never produced any output).
 - Proportional row allocation: up_rows/total == pos_max/range, so the zero
   line stays meaningful as the visual boundary between halves.
 - ANSI reverse video with complement block characters gives full 8-level

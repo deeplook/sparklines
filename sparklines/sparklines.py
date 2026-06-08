@@ -156,12 +156,21 @@ def allocate_rows(pos_max: float, neg_max: float, n: int) -> tuple[int, int]:
 
 
 def ideal_num_rows(pos_max: float, neg_max: float) -> int:
-    """Return the smallest total row count that yields an exactly proportional split."""
+    """Return the smallest total row count that yields an exactly proportional split.
+
+    Falls back to the closest approximation within 10 rows if no exact split exists.
+    """
+    best_n = 2
+    best_imbalance = float("inf")
     for n in range(2, 101):
         i, j = allocate_rows(pos_max, neg_max, n)
         if proportional(pos_max, neg_max, i, j):
             return n
-    raise ValueError("no proportional row count found within 101 rows")
+        imbalance = abs(pos_max * j - neg_max * i)
+        if imbalance < best_imbalance and n <= 10:
+            best_imbalance = imbalance
+            best_n = n
+    return best_n
 
 
 def resolve_mixed_rows(

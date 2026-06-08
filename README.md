@@ -24,7 +24,7 @@ Positive values work best, but negatives are fully supported: mixed data auto-sp
 
 A recorded demo session — click the image to play it on [Asciinema]:
 
-[![asciicast](https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep.png)](https://asciinema.org/a/5xwfvcrrk09fy3ml3a8n67hep)
+[![asciicast](https://asciinema.org/a/gXARhhEIskCsI4Xz.svg)](https://asciinema.org/a/gXARhhEIskCsI4Xz)
 
 ```bash
 $ sparklines 2 7 1 8 2 8 1 8

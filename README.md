@@ -20,6 +20,20 @@ Sparklines brings Edward Tufte's [sparklines] to your terminal — compact Unico
 
 Positive values work best, but negatives are fully supported: mixed data auto-splits into two rows, all-negative data renders as downward bars (see [Mixed and negative datasets] below). True line-style sparklines would require a dedicated font — out of scope here. We use "▁▂▃▄▅▆▇█" for values and a blank for missing ones.
 
+## Use cases
+
+**Finance** — stock price history, daily P&L (bipolar: gains above, losses below), trading volume spikes, bid-ask spread over a session.
+
+**IoT** — temperature and humidity sensors, power consumption per circuit, air quality index, battery charge on remote devices.
+
+**DevOps & SRE** — request rate and error rate per minute, CI build duration trend, queue depth, replica lag.
+
+**Data Science & ML** — training loss and validation accuracy per epoch, gradient norms, data drift score, inference latency after a deployment.
+
+**Agentic computing** — token usage and cost per API call, context window fill level, cache hit rate, tool-call frequency per agent loop iteration.
+
+**Health & Fitness** — heart rate during exercise, sleep quality over weeks, blood glucose across a day, daily caloric balance.
+
 ## Sample output
 
 A recorded demo session — click the image to play it on [Asciinema]:

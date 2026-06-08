@@ -38,7 +38,7 @@ Positive values work best, but negatives are fully supported: mixed data auto-sp
 
 A recorded demo session — click the image to play it on [Asciinema]:
 
-[![asciicast](https://asciinema.org/a/gXARhhEIskCsI4Xz.svg)](https://asciinema.org/a/gXARhhEIskCsI4Xz)
+[![asciicast](https://asciinema.org/a/gXARhhEIskCsI4Xz.png)](https://asciinema.org/a/gXARhhEIskCsI4Xz)
 
 
 ## Installation

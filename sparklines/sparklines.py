@@ -1,6 +1,6 @@
 """Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂▅.
 
-Please read the file README.rst for more information.
+Please read the file README.md for more information.
 """
 
 import sys

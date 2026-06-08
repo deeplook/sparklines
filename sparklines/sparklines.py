@@ -65,25 +65,40 @@ def _inverted_char(v: int, color: Optional[str] = None) -> str:
 def _check_emphasis(
     numbers: Sequence[Optional[float]], emph: list[str]
 ) -> dict[int, str]:
-    """Find index postions in list of numbers to be emphasized according to emph."""
-    pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
-    # find values to be highlighted
-    emphasized = {}  # index: color
-    for i, n in enumerate(numbers):
-        if n is None:
+    """Find index positions in list of numbers to be emphasized according to emph."""
+    val_pat = r"(\w+)\:(eq|gt|ge|lt|le)\:(.+)"
+    idx_pat = r"(\w+)\:\[([^\]]*)\]"
+    emphasized: dict[int, str] = {}
+
+    def _int_or_none(s: Optional[str]) -> Optional[int]:
+        return int(s) if s else None
+
+    for em in emph:
+        idx_match = re.fullmatch(idx_pat, em)
+        if idx_match:
+            color, slice_str = idx_match.groups()
+            parts = (slice_str.split(":") + [None, None, None])[:3]
+            sl = slice(
+                _int_or_none(parts[0]), _int_or_none(parts[1]), _int_or_none(parts[2])
+            )
+            for i in range(*sl.indices(len(numbers))):
+                if numbers[i] is not None:
+                    emphasized[i] = color
             continue
-        for em in emph:
-            match = re.match(pat, em)
+        for i, n in enumerate(numbers):
+            if n is None:
+                continue
+            match = re.fullmatch(val_pat, em)
             if match is None:
                 continue
-            color, op, value = match.groups()
-            value = float(value)
+            color, op, value_str = match.groups()
+            v = float(value_str)
             ops = {
-                "eq": n == value,
-                "gt": n > value,
-                "ge": n >= value,
-                "lt": n < value,
-                "le": n <= value,
+                "eq": n == v,
+                "gt": n > v,
+                "ge": n >= v,
+                "lt": n < v,
+                "le": n <= v,
             }
             if ops.get(op):
                 emphasized[i] = color

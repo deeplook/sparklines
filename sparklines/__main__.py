@@ -42,10 +42,10 @@ def test_valid_number(arg: str) -> str:
 
 def test_valid_emphasis(arg: str) -> str:
     """Argparse validator for color filter expressions."""
-    pat = r"\w+\:(eq|gt|ge|lt|le)\:.+"
-    if re.match(pat, arg):
+    if re.fullmatch(r"\w+\:(eq|gt|ge|lt|le)\:.+", arg):
         return arg
-
+    if re.fullmatch(r"\w+\:\[[^\]]*\]", arg):
+        return arg
     raise ValueError()
 
 
@@ -104,11 +104,11 @@ def main(argv: Optional[list[str]] = None) -> None:
         "-M", "--max", type=float, help="Use this value as the maximum for scaling."
     )
 
-    help_emph = f"""Emphasize input values below or above a certain
-        threshold (e.g. "green:gt:5.0"). This option takes one argument
-        value, but can be given repeatedly. Works only when optional
-        dependancy "termcolor" is met (which is {HAVE_TERMCOLOR} here). Otherwise
-        has no effect."""
+    help_emph = f"""Emphasize bars by value (e.g. "green:gt:5.0") or by
+        index using a Python slice (e.g. "red:[0:3]", "blue:[::2]",
+        "yellow:[-1:]"). This option takes one argument value, but can be
+        given repeatedly. Works only when optional dependency "termcolor"
+        is met (which is {HAVE_TERMCOLOR} here). Otherwise has no effect."""
     p.add_argument(
         "-e",
         "--emphasize",

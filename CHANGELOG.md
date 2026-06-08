@@ -3,7 +3,7 @@
 > **Note:** Not all versions listed here were published as GitHub releases.
 > PyPI remains the authoritative source for all released versions.
 
-## 1.0.0 — Breaking changes
+## 1.0.0
 
 - Mixed positive/negative data is now auto-detected and rendered as a
   proportional split sparkline automatically — no flags required. Upward bars

@@ -60,3 +60,4 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+sparklines-1.0.0.yaml

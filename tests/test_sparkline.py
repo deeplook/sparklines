@@ -199,6 +199,55 @@ def test_wrap_mixed_data() -> None:
     assert res[4].strip() == ""
 
 
+def test_wrap_mixed_structure() -> None:
+    """Test output length: 2 windows × (pos+neg rows) + 1 separator = 5 lines."""
+    res = sparklines([-4, -5, -6, 1, 2, 3], wrap=3)
+    assert len(res) == 5
+    assert res[2] == ""  # separator between windows
+
+
+def test_wrap_mixed_both_sides() -> None:
+    """Test wrap when every window contains both positive and negative values."""
+    res = [strip_ansi(line) for line in sparklines([1, -1, 2, -2], wrap=2)]
+    # 2 windows, each has pos row + neg row, separated by ""
+    assert len(res) == 5
+    for win_start in (0, 3):
+        assert res[win_start].strip() != ""  # pos row has a bar
+        assert res[win_start + 1].strip() != ""  # neg row has a bar
+
+
+def test_wrap_mixed_shared_scale() -> None:
+    """Test that pos/neg scale is global across all wrap windows."""
+    # [-1, 1, -8, 8] with wrap=2: global shared scale = 8.
+    # Window 0 has small values; window 1 has the maximum.
+    # With per-window scale both windows look identical; global scale makes them differ.
+    res = [strip_ansi(line) for line in sparklines([-1, 1, -8, 8], wrap=2)]
+    assert len(res) == 5
+    # pos rows: window 0 (index 0) and window 1 (index 3)
+    # The max pos value 8 is in window 1, so its bar char must be larger
+    assert res[0].strip() != ""  # window 0 has a positive bar
+    assert res[3].strip() != ""  # window 1 has a positive bar
+    assert res[3] > res[0]  # block chars are ordered by codepoint: ▁ < ▂ … < █
+
+
+def test_wrap_mixed_num_lines_tuple() -> None:
+    """Test wrap with explicit up:down row allocation."""
+    res = [
+        strip_ansi(line)
+        for line in sparklines([-4, -5, -6, 1, 2, 3], wrap=3, num_lines=(1, 2))
+    ]
+    # Each window: 1 pos row + 2 neg rows = 3 rows; 2 windows + 1 separator = 7 lines
+    assert len(res) == 7
+    assert res[3] == ""  # separator
+
+
+def test_wrap_all_negative_unaffected() -> None:
+    """Test that wrap on all-negative data (not mixed) still works correctly."""
+    res = [strip_ansi(line) for line in sparklines([-1, -2, -3, -4], wrap=2)]
+    assert len(res) == 3  # 2 windows + 1 separator
+    assert res[1] == ""
+
+
 def test_wrap_escaping_consistency() -> None:
     """Test that emphasis ANSI codes don't affect bar characters when stripped."""
     no_emph = sparklines([1, 2, 3, 1, 2, 3, 1, 2], wrap=3)

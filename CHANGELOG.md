@@ -24,6 +24,13 @@
 - ANSI reverse video with complement block characters gives full 8-level
   resolution for downward bars. Falls back to top-fill Unicode characters
   (▔▀█) when NO_COLOR, ANSI_COLORS_DISABLED, or TERM=dumb is set.
+- Fixed: color emphasis (-e) in mixed positive/negative sparklines is now
+  evaluated against the original values, not the abs-converted partition.
+  Conditions like "blue:lt:0" now correctly match negative bars.
+- New index-slice form for -e/--emphasize: "color:[start:stop:step]" selects
+  bars by position rather than value, using standard Python slice syntax
+  (e.g. "red:[0:3]", "blue:[::2]", "yellow:[-1:]"). Value and slice
+  expressions can be mixed freely.
 
 ## 0.7.0 — Eighth release
 

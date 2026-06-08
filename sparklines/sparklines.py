@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-"""
-Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂▅.
+"""Text-based sparklines, e.g. on the command-line like this: ▃▁▄▁▄█▂▅.
 
 Please read the file README.rst for more information.
 """
@@ -10,7 +9,8 @@ import math
 import os
 import re
 import sys
-from typing import Any, Literal, Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Any, Literal, Optional, Union
 
 try:
     import termcolor
@@ -39,9 +39,7 @@ def _ansi_ok() -> bool:
     """
     if os.environ.get("NO_COLOR") or os.environ.get("ANSI_COLORS_DISABLED"):
         return False
-    if os.environ.get("TERM") == "dumb":
-        return False
-    return True
+    return os.environ.get("TERM") != "dumb"
 
 
 def _inverted_char(v: int, color: Optional[str] = None) -> str:
@@ -82,15 +80,14 @@ def _check_emphasis(
                 continue
             color, op, value = match.groups()
             value = float(value)
-            if op == "eq" and n == value:
-                emphasized[i] = color
-            elif op == "gt" and n > value:
-                emphasized[i] = color
-            elif op == "ge" and n >= value:
-                emphasized[i] = color
-            elif op == "lt" and n < value:
-                emphasized[i] = color
-            elif op == "le" and n <= value:
+            ops = {
+                "eq": n == value,
+                "gt": n > value,
+                "ge": n >= value,
+                "lt": n < value,
+                "le": n <= value,
+            }
+            if ops.get(op):
                 emphasized[i] = color
     return emphasized
 
@@ -179,10 +176,7 @@ def resolve_mixed_rows(
     """Resolve a NumLines spec into a concrete (up_rows, down_rows) pair."""
     if isinstance(num_lines, tuple):
         return num_lines
-    if num_lines == "auto":
-        n = ideal_num_rows(pos_max, neg_max)
-    else:
-        n = max(num_lines, 2)
+    n = ideal_num_rows(pos_max, neg_max) if num_lines == "auto" else max(num_lines, 2)
     return allocate_rows(pos_max, neg_max, n)
 
 
@@ -350,8 +344,7 @@ def sparklines(
     wrap: Optional[int] = None,
     zero: Literal["up", "none"] = "up",
 ) -> list[str]:
-    """
-    Return a list of 'sparkline' strings for a given list of input numbers.
+    """Return a list of 'sparkline' strings for a given list of input numbers.
 
     The list of input numbers may contain None values, too, for which the
     resulting sparkline will contain a blank character (a space).
@@ -360,7 +353,6 @@ def sparklines(
     bars for positives on top, downward bars for negatives below.
 
     Examples:
-
         sparklines([3, 1, 4, 1, 5, 9, 2, 6])
         -> ['▃▁▄▁▄█▂▅']
         sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=2)
@@ -368,6 +360,7 @@ def sparklines(
             '     █ ▂',
             '▅▁▆▁██▃█'
         ]
+
     """
     if numbers is None:
         numbers = []
@@ -432,128 +425,84 @@ def list_join(separator: str, lists: list[list[Any]]) -> list[Any]:
     return result
 
 
+def _demo_lines(nums: list[Optional[float]]) -> list[str]:
+    """Generate demo output lines without incremental list appending."""
+
+    def fmt(num: Union[float, int, None]) -> str:
+        return f"{num:g}" if isinstance(num, (float, int)) else "None"
+
+    nums1 = list(map(fmt, nums))
+    prog = sys.argv[0] if __name__ == "__main__" else "sparklines"
+    nums_gap = nums + [None] + list(reversed(nums[:]))
+    mixed_nums: list[Optional[float]] = [3, -1, 4, -1, 5, -9, 2, -6]
+    mixed_nums1 = list(map(fmt, mixed_nums))
+    auto_nums: list[Optional[float]] = [1, 2, 3, -1, -2, -3, 0, 4, 5, 6]
+    auto_nums1 = list(map(fmt, auto_nums))
+    zero_nums: list[Optional[float]] = [0, 1, 2, -1, -2, 0]
+    zero_nums1 = list(map(fmt, zero_nums))
+
+    return [
+        "Usage examples (command-line and programmatic use):",
+        "",
+        "- Standard one-line sparkline",
+        f"{prog} {' '.join(nums1)}",
+        f">>> for line in sparklines([{', '.join(nums1)}]): print(line)",
+        *sparklines(nums),
+        "",
+        "- Multi-line sparkline (n=2)",
+        f"{prog} -n 2 {' '.join(nums1)}",
+        f">>> for line in sparklines([{', '.join(nums1)}], num_lines=2): print(line)",
+        *sparklines(nums, num_lines=2),
+        "",
+        "- Multi-line sparkline (n=3)",
+        f"{prog} -n 3 {' '.join(nums1)}",
+        f">>> for line in sparklines([{', '.join(nums1)}], num_lines=3): print(line)",
+        *sparklines(nums, num_lines=3),
+        "",
+        "- Standard one-line sparkline with gap",
+        f"{prog} {' '.join(map(str, nums_gap))}",
+        f">>> for line in sparklines([{', '.join(map(str, nums_gap))}]): print(line)",
+        *sparklines(nums_gap),
+        "",
+        "- Auto-split sparkline (mixed positive and negative values)",
+        f"{prog} {' '.join(mixed_nums1)}",
+        f">>> for line in sparklines([{', '.join(mixed_nums1)}]): print(line)",
+        *sparklines(mixed_nums),
+        "",
+        "- Auto-split with proportional rows (-n auto)",
+        f"{prog} -n auto {' '.join(auto_nums1)}",
+        (
+            f">>> for line in sparklines([{', '.join(auto_nums1)}],"
+            f" num_lines='auto'): print(line)"
+        ),
+        *sparklines(auto_nums, num_lines="auto"),
+        "",
+        "- Explicit row layout (-n 2:1)",
+        f"{prog} -n 2:1 {' '.join(auto_nums1)}",
+        (
+            f">>> for line in sparklines([{', '.join(auto_nums1)}],"
+            f" num_lines=(2,1)): print(line)"
+        ),
+        *sparklines(auto_nums, num_lines=(2, 1)),
+        "",
+        "- Zero on positive baseline (--zero up, default)",
+        f"{prog} --zero up {' '.join(zero_nums1)}",
+        f">>> for line in sparklines([{', '.join(zero_nums1)}], zero='up'): print(line)",  # noqa: E501
+        *sparklines(zero_nums, zero="up"),
+        "",
+        "- Zeros omitted from both sides (--zero none)",
+        f"{prog} --zero none {' '.join(zero_nums1)}",
+        (
+            f">>> for line in sparklines([{', '.join(zero_nums1)}],"
+            f" zero='none'): print(line)"
+        ),
+        *sparklines(zero_nums, zero="none"),
+    ]
+
+
 def demo(nums: Optional[list[Optional[float]]] = None) -> str:
     """Print a few usage examples on stdout."""
     if nums is None:
         nums = []
-
     nums = nums or [3, 1, 4, 1, 5, 9, 2, 6]
-
-    def fmt(num: Union[float, int, None]) -> str:
-        return "{0:g}".format(num) if isinstance(num, (float, int)) else "None"
-
-    nums1 = list(map(fmt, nums))
-
-    if __name__ == "__main__":
-        prog = sys.argv[0]
-    else:
-        prog = "sparklines"
-
-    result = []
-
-    result.append("Usage examples (command-line and programmatic use):")
-    result.append("")
-
-    result.append("- Standard one-line sparkline")
-    result.append("{0!s} {1!s}".format(prog, " ".join(nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}]): print(line)".format(", ".join(nums1))
-    )
-    for line in sparklines(nums):
-        result.append(line)
-    result.append("")
-
-    result.append("- Multi-line sparkline (n=2)")
-    result.append("{0!s} -n 2 {1!s}".format(prog, " ".join(nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], num_lines=2): print(line)".format(
-            ", ".join(nums1)
-        )
-    )
-    for line in sparklines(nums, num_lines=2):
-        result.append(line)
-    result.append("")
-
-    result.append("- Multi-line sparkline (n=3)")
-    result.append("{0!s} -n 3 {1!s}".format(prog, " ".join(nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], num_lines=3): print(line)".format(
-            ", ".join(nums1)
-        )
-    )
-    for line in sparklines(nums, num_lines=3):
-        result.append(line)
-    result.append("")
-
-    nums_gap = nums + [None] + list(reversed(nums[:]))
-    result.append("- Standard one-line sparkline with gap")
-    result.append("{0!s} {1!s}".format(prog, " ".join(map(str, nums_gap))))
-    result.append(
-        ">>> for line in sparklines([{0!s}]): print(line)".format(
-            ", ".join(map(str, nums_gap))
-        )
-    )
-    for line in sparklines(nums_gap):
-        result.append(line)
-    result.append("")
-
-    mixed_nums = [3, -1, 4, -1, 5, -9, 2, -6]
-    mixed_nums1 = list(map(fmt, mixed_nums))
-    result.append("- Auto-split sparkline (mixed positive and negative values)")
-    result.append("{0!s} {1!s}".format(prog, " ".join(mixed_nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}]): print(line)".format(
-            ", ".join(mixed_nums1)
-        )
-    )
-    for line in sparklines(mixed_nums):
-        result.append(line)
-    result.append("")
-
-    auto_nums = [1, 2, 3, -1, -2, -3, 0, 4, 5, 6]
-    auto_nums1 = list(map(fmt, auto_nums))
-    result.append("- Auto-split with proportional rows (-n auto)")
-    result.append("{0!s} -n auto {1!s}".format(prog, " ".join(auto_nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], num_lines='auto'): print(line)".format(
-            ", ".join(auto_nums1)
-        )
-    )
-    for line in sparklines(auto_nums, num_lines="auto"):
-        result.append(line)
-    result.append("")
-
-    result.append("- Explicit row layout (-n 2:1)")
-    result.append("{0!s} -n 2:1 {1!s}".format(prog, " ".join(auto_nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], num_lines=(2,1)): print(line)".format(
-            ", ".join(auto_nums1)
-        )
-    )
-    for line in sparklines(auto_nums, num_lines=(2, 1)):
-        result.append(line)
-    result.append("")
-
-    zero_nums = [0, 1, 2, -1, -2, 0]
-    zero_nums1 = list(map(fmt, zero_nums))
-    result.append("- Zero on positive baseline (--zero up, default)")
-    result.append("{0!s} --zero up {1!s}".format(prog, " ".join(zero_nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], zero='up'): print(line)".format(
-            ", ".join(zero_nums1)
-        )
-    )
-    for line in sparklines(zero_nums, zero="up"):
-        result.append(line)
-    result.append("")
-
-    result.append("- Zeros omitted from both sides (--zero none)")
-    result.append("{0!s} --zero none {1!s}".format(prog, " ".join(zero_nums1)))
-    result.append(
-        ">>> for line in sparklines([{0!s}], zero='none'): print(line)".format(
-            ", ".join(zero_nums1)
-        )
-    )
-    for line in sparklines(zero_nums, zero="none"):
-        result.append(line)
-    return "\n".join(result) + "\n"
+    return "\n".join(_demo_lines(nums)) + "\n"

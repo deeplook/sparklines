@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-"""
-CLI entry point for the program.
-"""
+"""CLI entry point for the sparklines program."""
 
 import argparse
 import importlib.util
@@ -11,10 +9,7 @@ import sys
 from importlib.metadata import version
 from typing import Optional
 
-if sys.version_info.major >= 3:
-    from sparklines.sparklines import NumLines, sparklines, demo
-else:
-    from sparklines import sparklines, demo
+from sparklines.sparklines import NumLines, sparklines, demo
 
 HAVE_TERMCOLOR = bool(importlib.util.find_spec("termcolor"))
 
@@ -64,10 +59,10 @@ def parse_num_lines(arg: str) -> "NumLines":
         parts = arg.split(":", 1)
         try:
             up, down = int(parts[0]), int(parts[1])
-        except ValueError:
+        except ValueError as e:
             raise argparse.ArgumentTypeError(
                 f"invalid row split: {arg!r} (use up:down, e.g. 4:4)"
-            )
+            ) from e
         if up < 1 or down < 1:
             raise argparse.ArgumentTypeError(
                 f"row split must be >= 1 on each side, got {arg!r}"
@@ -75,17 +70,17 @@ def parse_num_lines(arg: str) -> "NumLines":
         return (up, down)
     try:
         n = int(arg)
-    except ValueError:
+    except ValueError as e:
         raise argparse.ArgumentTypeError(
             f"invalid row count: {arg!r} (use a positive integer, 'auto', or up:down)"
-        )
+        ) from e
     if n < 1:
         raise argparse.ArgumentTypeError(f"-n must be >= 1, got {n}")
     return n
 
 
 def main(argv: Optional[list[str]] = None) -> None:
-    """Main entry point for the CLI."""
+    """Run the sparklines CLI."""
     desc = """Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
         3 1 4 1 5 9 2 6. Please add bug reports and suggestions to
         https://github.com/deeplook/sparklines/issues."""

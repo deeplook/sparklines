@@ -14,7 +14,7 @@ sparklines -n 2 3 1 4 1 5 9 2 6
 - Multi-line sparkline (n=3)
 sparklines -n 3 3 1 4 1 5 9 2 6
 >>> for line in sparklines([3, 1, 4, 1, 5, 9, 2, 6], num_lines=3): print(line)
-     █  
+     █
   ▂ ▄█ ▇
 ▇▁█▁██▄█
 
@@ -26,7 +26,7 @@ sparklines 3 1 4 1 5 9 2 6 None 6 2 9 5 1 4 1 3
 - Auto-split sparkline (mixed positive and negative values)
 sparklines 3 -1 4 -1 5 -9 2 -6
 >>> for line in sparklines([3, -1, 4, -1, 5, -9, 2, -6]): print(line)
-▃ ▄ ▅ ▃ 
+▃ ▄ ▅ ▃
  [7m▆[0m [7m▆[0m █ [7m▂[0m
 
 - Auto-split with proportional rows (-n auto)
@@ -34,23 +34,23 @@ sparklines -n auto 1 2 3 -1 -2 -3 0 4 5 6
 >>> for line in sparklines([1, 2, 3, -1, -2, -3, 0, 4, 5, 6], num_lines='auto'): print(line)
        ▃▆█
 ▄▆█   ▁███
-   [7m▆[0m[7m▅[0m[7m▄[0m    
+   [7m▆[0m[7m▅[0m[7m▄[0m
 
 - Explicit row layout (-n 2:1)
 sparklines -n 2:1 1 2 3 -1 -2 -3 0 4 5 6
 >>> for line in sparklines([1, 2, 3, -1, -2, -3, 0, 4, 5, 6], num_lines=(2,1)): print(line)
        ▃▆█
 ▄▆█   ▁███
-   [7m▅[0m[7m▂[0m█    
+   [7m▅[0m[7m▂[0m█
 
 - Zero on positive baseline (--zero up, default)
 sparklines --zero up 0 1 2 -1 -2 0
 >>> for line in sparklines([0, 1, 2, -1, -2, 0], zero='up'): print(line)
 ▁▄█  ▁
-   [7m▄[0m█ 
+   [7m▄[0m█
 
 - Zeros omitted from both sides (--zero none)
 sparklines --zero none 0 1 2 -1 -2 0
 >>> for line in sparklines([0, 1, 2, -1, -2, 0], zero='none'): print(line)
- ▄█   
-   [7m▄[0m█ 
+ ▄█
+   [7m▄[0m█

@@ -6,3 +6,12 @@ enabled = true
 
   [analyzers.meta]
   runtime_version = "3.x.x"
+  type_checker = "mypy"
+  # Don't require docstrings on non-public functions (e.g. inner helpers like fmt)
+  skip_doc_coverage = ["nonpublic", "magic", "init"]
+  # Accept higher cyclomatic complexity — scale_values is intentionally dense
+  cyclomatic_complexity_threshold = "very-high"
+
+[[transformers]]
+name = "ruff"
+enabled = true

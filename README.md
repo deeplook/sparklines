@@ -85,19 +85,6 @@ pytest tests
 
 ## Usage
 
-Please note that the samples below might look a little funky (misaligned or
-even colored) in some browsers, but it should be totally fine when you print
-this in your terminal, Python or IPython session or your Python IDE of choice.
-The figure below might show better what you should expect than the copied sample
-code thereafter:
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/deeplook/sparklines/main/example_python.png" width="65%" alt="example interactive invocation">
-  <br>
-  <em>Example invocation from a Python and an IPython session.</em>
-</p>
-
-
 ### Python
 
 ```python

@@ -3,6 +3,14 @@
 > **Note:** Not all versions listed here were published as GitHub releases.
 > PyPI remains the authoritative source for all released versions.
 
+## Unreleased
+
+- New example `examples/mac_hardware.py`: a live Textual dashboard showing
+  sparklines for Apple Silicon Mac sensors (accelerometer axes, lid angle,
+  ambient light, fan speed, display brightness) via the mac-hardware-toys
+  package. Sensors unavailable on the current hardware show a dash-line
+  placeholder so the full layout is always visible.
+
 ## 1.0.0
 
 - Mixed positive/negative data is now auto-detected and rendered as a

@@ -26,6 +26,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install build
 
+    - name: "Check minimum safe dependency versions"
+      run: python scripts/check_min_versions.py
+
     - name: Build distribution packages
       run: python -m build
 

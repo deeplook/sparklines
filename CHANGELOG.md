@@ -10,6 +10,11 @@
   ambient light, fan speed, display brightness) via the mac-hardware-toys
   package. Sensors unavailable on the current hardware show a dash-line
   placeholder so the full layout is always visible.
+- Drop support for Python 3.9 (and PyPy 3.9): pip 26.2.2, the new minimum
+  safe version, requires Python 3.10 or newer. `requires-python` is now
+  `>=3.10` and CI no longer tests 3.9 or PyPy 3.9.
+- CI now fails if a locked or installed dependency, or the uv binary, is below
+  its minimum safe version (`scripts/check_min_versions.py`).
 
 ## 1.0.0
 

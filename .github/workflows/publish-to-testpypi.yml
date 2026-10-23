@@ -29,6 +29,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install build tomli tomli-w
 
+    - name: "Check minimum safe dependency versions"
+      run: python scripts/check_min_versions.py
+
     - name: Set test version
       run: |
         python - <<EOF

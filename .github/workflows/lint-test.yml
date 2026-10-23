@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "pypy-3.9"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v7
@@ -41,6 +41,9 @@ jobs:
         python -m pip install ruff==0.9.0 mypy
         python -m pip install -e ".[test]"
 
+    - name: "Check minimum safe dependency versions"
+      run: python scripts/check_min_versions.py
+
     - name: Lint with Ruff
       run: |
         # Run linting and formatting checks
@@ -52,7 +55,6 @@ jobs:
       run: |
         mypy --strict sparklines tests
 
-    - name: Test with pytest and coverage (skip 3.9)
-      if: ${{ matrix.python-version != '3.9' }}
+    - name: Test with pytest and coverage
       run: |
         pytest tests --cov=./ --cov-report=term-missing

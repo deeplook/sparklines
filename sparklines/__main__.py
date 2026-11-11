@@ -77,6 +77,19 @@ def parse_num_lines(arg: str) -> "NumLines":
     return n
 
 
+def parse_wrap_period(arg: str) -> int:
+    """Parse -w argument: a positive integer wrap period."""
+    try:
+        period = int(arg)
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(
+            f"invalid wrap period: {arg!r} (use a positive integer)"
+        ) from e
+    if period < 1:
+        raise argparse.ArgumentTypeError(f"-w must be >= 1, got {period}")
+    return period
+
+
 def main(argv: Optional[list[str]] = None) -> None:
     """Run the sparklines CLI."""
     desc = """Sparklines on the command-line, e.g. ▃▁▄▁▄█▂▅ for
@@ -151,7 +164,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     data points. This is useful for data with natural periodicity:
     for example daily or weekly.
     """
-    p.add_argument("-w", "--wrap", metavar="PERIOD", type=int, help=help_wrap)
+    p.add_argument(
+        "-w", "--wrap", metavar="PERIOD", type=parse_wrap_period, help=help_wrap
+    )
 
     a = args = p.parse_args(argv)
 

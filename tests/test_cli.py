@@ -91,6 +91,23 @@ def test_demo_consistency() -> None:
     assert "\x1b[7m" in res, "Demo inverted output is missing ANSI reverse video codes"
 
 
+def test_wrap_non_positive_period_is_rejected(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test that -w/--wrap with 0 or a negative period is an argparse error."""
+    with pytest.raises(SystemExit) as excinfo:
+        main(["-w", "0", "1", "2", "3"])
+    assert excinfo.value.code == 2
+    _, err = capsys.readouterr()
+    assert ">= 1" in err
+
+    with pytest.raises(SystemExit) as excinfo:
+        main(["-w", "-2", "1", "2", "3"])
+    assert excinfo.value.code == 2
+    _, err = capsys.readouterr()
+    assert ">= 1" in err
+
+
 def test_main_version(capsys: pytest.CaptureFixture[str]) -> None:
     """Test that --version prints the version from pyproject.toml and exits 0."""
     pyproject_toml = Path(__file__).parent.parent / "pyproject.toml"
